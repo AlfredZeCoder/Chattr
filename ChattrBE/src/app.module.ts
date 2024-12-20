@@ -14,17 +14,19 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
       envFilePath: '.env',
       isGlobal: true
     }),
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost', //change this to ENV variable
-      port: 5432,
-      username: 'alfred',
-      password: 'Password1', //change this to ENV variable
-      database: 'chattr',
-      entities: [
-        User
-      ],
-      synchronize: true,
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: configService.get('DB_TYPE') as 'postgres',
+        host: configService.get('DB_HOST'),
+        port: +configService.get('DB_PORT'),
+        username: configService.get('DB_USERNAME'),
+        password: configService.get('DB_PASSWORD'),
+        database: configService.get<string>('DB_NAME'),
+        entities: [User],
+        synchronize: true,
+      }),
     }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
