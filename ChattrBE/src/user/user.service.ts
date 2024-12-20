@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
-import { HashingService } from 'src/services/hashing.service';
+import { HashingService } from 'src/auth/hashing.service';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -17,20 +17,19 @@ export class UserService {
     };
 
     findOneById = async (id: number): Promise<User | null> => {
-        return await this.userRepository.findOneBy({ id });
+        const user = this.userRepository.findOneBy({ id });
+        if (!user) {
+            throw new Error('User not found');
+        }
+        return user;
     };
 
-    findOneByEmail = async (email: string): Promise<User | null> => {
-        return await this.userRepository.findOne({
+    findOneByEmail = async (email: string): Promise<User> => {
+        const user = await this.userRepository.findOne({
             where: { email }
         });
-    };
 
-    addUser = async (user: User): Promise<User> => {
-        let newUser = this.userRepository.create(user);
-        newUser.password = await this.hashService.hashPassword(user.password);
-        newUser = await this.userRepository.save(newUser);
-        return newUser;
+        return user;
     };
 
 }

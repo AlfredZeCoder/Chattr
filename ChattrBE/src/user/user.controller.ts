@@ -16,10 +16,4 @@ export class UserController {
         return users.map(user => GetUserDto.toDto(user));
 
     }
-
-    @Post('add')
-    async addUser(@Body() user: User) {
-        return this.userService.addUser(user)
-            .then(user => GetUserDto.toDto(user));
-    }
 }

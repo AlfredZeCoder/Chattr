@@ -1,14 +1,19 @@
 import { Module } from "@nestjs/common";
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { LoginModule } from './login/login.module';
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { User } from "./entities/user.entity";
 import { UserModule } from './user/user.module';
-import { HashingService } from './services/hashing.service';
+import { AuthModule } from './auth/auth.module';
+import { JwtModule } from "@nestjs/jwt";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      envFilePath: '.env',
+      isGlobal: true
+    }),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost', //change this to ENV variable
@@ -21,11 +26,20 @@ import { HashingService } from './services/hashing.service';
       ],
       synchronize: true,
     }),
-    LoginModule,
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      global: true,
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.get('JWT_SECRET'),
+        signOptions: { expiresIn: '24h' },
+      }),
+    }),
     UserModule,
+    AuthModule,
 
   ],
   controllers: [AppController],
-  providers: [AppService, HashingService],
+  providers: [AppService],
 })
 export class AppModule { }

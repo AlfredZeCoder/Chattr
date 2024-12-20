@@ -3,13 +3,14 @@ import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
-import { HashingService } from 'src/services/hashing.service';
+import { HashingService } from 'src/auth/hashing.service';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
   ],
   controllers: [UserController],
-  providers: [UserService, HashingService]
+  providers: [UserService, HashingService],
+  exports: [UserService]
 })
 export class UserModule { }
