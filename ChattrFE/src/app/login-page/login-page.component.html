@@ -1,0 +1,20 @@
+<div class="container">
+    <div class="main">
+        <div class="title">
+            <h3>Enter your informations</h3>
+        </div>
+        <form [formGroup]="signInForm" class="form">
+            <input formControlName="email" class="email" type="text" placeholder="Email">
+            <input formControlName="password" class="password" type="password" placeholder="Password">
+            <button (click)="test()" type=" submit" class="login">Login</button>
+        </form>
+        <div class="register">
+            <div class="line"></div>
+            <p>OR</p>
+            <div class="line"></div>
+        </div>
+        <div class="create-account">
+            <button class="register-button">Create an account now</button>
+        </div>
+    </div>
+</div>

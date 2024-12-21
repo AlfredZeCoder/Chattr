@@ -1,1 +1,60 @@
 /* You can add global styles to this file, and also import other style files */
+:root {
+    --gray-text: rgb(149, 165, 166);
+
+    --soft-gray-border: rgb(206, 206, 206);
+    --soft-gray-underline: rgb(218, 220, 224);
+    --kubernetes-blue: #326CE5;
+    --green: rgb(106, 175, 53);
+    --soft-gray: rgba(243, 243, 243, 0.842);
+    --soft-gray-background: rgb(246, 248, 249);
+    --main-background: rgb(22, 26, 29);
+    --soft-white: rgb(234, 237, 237);
+    --dark-gray: rgba(223, 223, 223, 0.918);
+    --light-gray: #414750;
+    --line-gray: rgb(84, 91, 100);
+    --soft-blue: rgb(68, 185, 214);
+    --gray-alt: #2A2E33;
+    --gray-alt-darker: rgb(34, 39, 43);
+}
+
+@font-face {
+    font-family: "Nunito Light";
+    src: url('./assets/Nunito_Sans/static/NunitoSans_10pt-Light.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Nunito Regular";
+    src: url('./assets/Nunito_Sans/static/NunitoSans_10pt-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Nunito Bold";
+    src: url('./assets/Nunito_Sans/static/NunitoSans_10pt-Bold.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+body {
+    margin: 0;
+    height: 100%;
+    /* font-family: Roboto, "Helvetica Neue", sans-serif; */
+    font-family: "Nunito Regular";
+    /*make children flex items so we can use flex-grow and flex-shrink to control their size */
+    display: flex;
+    flex-direction: column;
+}
+
+
+.full-height {
+    height: 100%;
+}
+
+html {
+    height: 100%;
+}
