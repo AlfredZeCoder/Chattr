@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { HashingService } from './hashing.service';
 import { UserService } from 'src/user/user.service';
 import { LogInDto } from 'src/dtos/login.dto';
@@ -33,12 +33,12 @@ export class AuthService {
     async login(loginDto: LogInDto) {
         const user = await this.userService.findOneByEmail(loginDto.email);
         if (!user) {
-            throw new UnauthorizedException('User not found');
+            throw new BadRequestException('User not found');
         }
         const passwordMatch = await this.hashingService.comparePassword(loginDto.password, user.password);
 
         if (!passwordMatch) {
-            throw new UnauthorizedException('Password incorrect');
+            throw new BadRequestException('Password incorrect');
         }
         return user;
     }
