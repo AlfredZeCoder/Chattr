@@ -19,6 +19,12 @@
     margin-bottom: 20px;
 }
 
+.title h5 {
+    color: red;
+    margin: 0;
+    padding: 0;
+}
+
 .main .form {
     margin: 50px 0 0 0;
     display: flex;
@@ -33,6 +39,13 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     outline: none;
     transition: box-shadow .3s;
+}
+
+.form p {
+    font-size: 15px;
+    color: red;
+    margin: 0;
+    padding: 0;
 }
 
 .form input::placeholder {

@@ -2,11 +2,18 @@
     <div class="main">
         <div class="title">
             <h3>Enter your informations</h3>
+            @if (loginDenied$ | async) {
+            <h5>Email or password invalid</h5>
+            }
         </div>
-        <form [formGroup]="signInForm" class="form">
-            <input formControlName="email" class="email" type="text" placeholder="Email">
-            <input formControlName="password" class="password" type="password" placeholder="Password">
-            <button (click)="test()" type=" submit" class="login">Login</button>
+        <form [formGroup]="loginInForm" class="form">
+            <input formControlName="email" class="email" type="text" placeholder="Email"
+                [ngStyle]="{'box-shadow': (emailIsInvalid$ | async) ? '0 0 10px rgb(255, 175, 175)' : null}"
+                (keyup)="onKeyUp('email')">
+            <input formControlName="password" class="password" type="password" placeholder="Password"
+                [ngStyle]="{'box-shadow': (passwordIsInvalid$ | async) ? '0 0 10px rgb(255, 175, 175)' : null}"
+                (keyup)="onKeyUp('password')">
+            <button (click)="submitForm()" type=" submit" class="login">Login</button>
         </form>
         <div class="register">
             <div class="line"></div>

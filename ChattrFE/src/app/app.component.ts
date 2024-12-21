@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
-import { LoginPageComponent } from './login-page/login-page.component';
 import { RouterOutlet } from '@angular/router';
+import { AuthService } from './services/auth.service';
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-root',
@@ -9,5 +10,23 @@ import { RouterOutlet } from '@angular/router';
   styleUrl: './app.component.css'
 })
 export class AppComponent {
-  title = 'ChattrFE';
+  constructor(
+    private authService: AuthService,
+    private cookieService: CookieService
+  ) { }
+
+  ngOnInit() {
+    const token = this.cookieService.get('access_token');
+    if (token) {
+      this.authService.loginWithToken$(token).subscribe({
+        next: (token) => {
+          this.authService.putTokenInCookies(token);
+          this.authService.isLoggedIn$.next(true);
+        },
+        error: (error) => {
+          console.error(error);
+        }
+      });
+    }
+  }
 }
