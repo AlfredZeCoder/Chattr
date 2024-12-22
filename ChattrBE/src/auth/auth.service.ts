@@ -22,7 +22,7 @@ export class AuthService {
 
     addUser = async (user: User): Promise<User> => {
         if (await this.userService.findOneByEmail(user.email)) {
-            throw new UnauthorizedException('User already exists');
+            throw new BadRequestException('User already exists');
         }
         let newUser = this.userRepository.create(user);
         newUser.password = await this.hashingService.hashPassword(user.password);
