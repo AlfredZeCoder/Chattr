@@ -1,13 +1,10 @@
 import { Body, Controller, Post, Put, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LogInDto } from 'src/dtos/login.dto';
-import { User } from 'src/entities/user.entity';
 import { AccessTokenPayloadParser, IAccessTokenPayload, IJwt } from 'src/models/access-token-payload';
-import { GetUserDto } from 'src/dtos/get-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
-import { AuthGuard } from 'src/guards/auth.guard';
-import { ApiBearerAuth, ApiProperty } from '@nestjs/swagger';
+import { ApiBearerAuth } from '@nestjs/swagger';
 import { AddUserDto } from 'src/dtos/add-user.dto';
 import { AddRoleDto } from 'src/dtos/add-role.dto';
 
@@ -20,11 +17,9 @@ export class AuthController {
         private userService: UserService
     ) { }
 
-    // @ApiProperty({ type: AddUserDto })
     @Post('add')
     async addUser(@Body() userP: AddUserDto) {
         const user = await this.authService.addUser(userP);
-        // .then(user => GetUserDto.toDto(user));
         const payload = AccessTokenPayloadParser.parseToPayload(user);
         return {
             token: await this.jwtService.signAsync(payload, { secret: process.env.JWT_SECRET }),
@@ -37,7 +32,6 @@ export class AuthController {
 
         const user = await this.authService.login(loginDto);
         const payload = AccessTokenPayloadParser.parseToPayload(user);
-        // this.authService.addRole({ token: await this.jwtService.signAsync(payload, { secret: process.env.JWT_SECRET }) });
         return {
             token: await this.jwtService.signAsync(payload, { secret: process.env.JWT_SECRET }),
         };
