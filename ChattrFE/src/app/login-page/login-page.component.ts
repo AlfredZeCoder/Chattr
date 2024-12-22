@@ -3,17 +3,23 @@ import { AsyncPipe, NgStyle } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
 import { BehaviorSubject } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login-page',
-  imports: [ReactiveFormsModule, AsyncPipe, NgStyle],
+  imports: [
+    ReactiveFormsModule,
+    AsyncPipe,
+    NgStyle,
+  ],
   templateUrl: './login-page.component.html',
   styleUrl: './login-page.component.css'
 })
 export class LoginPageComponent {
 
   constructor(
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) { }
 
   loginInForm = new FormGroup({
@@ -25,6 +31,20 @@ export class LoginPageComponent {
   passwordIsInvalid$ = new BehaviorSubject<boolean>(false);
   loginDenied$ = new BehaviorSubject<boolean>(false);
   hasClikedSubmit = false;
+  opacity$ = new BehaviorSubject<number>(0);
+
+  ngAfterViewInit() {
+    setTimeout(() => {
+      this.opacity$.next(1);
+    }, 0);
+  }
+
+  ngOnDestroy() {
+    this.emailIsInvalid$.unsubscribe();
+    this.passwordIsInvalid$.unsubscribe();
+    this.loginDenied$.unsubscribe();
+    this.opacity$.unsubscribe();
+  }
 
   checkLoginFormValidity() {
     return this.loginInForm.valid;
@@ -82,5 +102,16 @@ export class LoginPageComponent {
       this.passwordIsInvalid$.next(true);
     }
   };
+
+  changeRoute() {
+    this.changeOpacity();
+    setTimeout(() => {
+      this.router.navigate(['/register']);
+    }, 500);
+  }
+
+  changeOpacity() {
+    this.opacity$.next(0);
+  }
 
 }

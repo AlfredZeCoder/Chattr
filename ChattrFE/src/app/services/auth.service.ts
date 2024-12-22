@@ -3,7 +3,9 @@ import { Injectable } from '@angular/core';
 import { SERVER_URL } from '../../../env';
 import { Token } from '../models/token.interface';
 import { CookieService } from 'ngx-cookie-service';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { User } from '../models/user.interface';
+import { ErrorMessage } from '../models/error-message.interface';
 
 
 @Injectable({
@@ -16,7 +18,7 @@ export class AuthService {
     private cookieService: CookieService
   ) { }
 
-  isLoggedIn$ = new BehaviorSubject<boolean>(false);
+  isLoggedIn$ = new BehaviorSubject<boolean | null>(null);
 
   loginWithCredentials$ = (email: string, password: string) => {
     return this.httpClient.post<Token>(
@@ -39,5 +41,13 @@ export class AuthService {
 
   putTokenInCookies = (token: Token) => {
     this.cookieService.set('access_token', token.token);
+  };
+
+  register$ = (user: User | ErrorMessage) => {
+    return this.httpClient.post<Token>(
+      SERVER_URL + '/auth/add',
+      user
+    );
+
   };
 }

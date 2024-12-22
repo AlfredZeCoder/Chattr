@@ -1,9 +1,16 @@
-.logo-container {
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.container .logo-container {
     display: flex;
     justify-content: center;
     margin-top: 20px;
 }
 
-.logo {
+.logo-container .logo {
     width: 150px;
+    cursor: pointer;
 }

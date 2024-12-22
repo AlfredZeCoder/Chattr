@@ -1,10 +1,10 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './guards/auth.guard';
+import { isLoggedInGuard } from './guards/is-logged-in.guard';
 
 export const routes: Routes = [
     {
         path: "",
-        redirectTo: "/text",
+        redirectTo: "/login",
         pathMatch: "full"
 
     },
@@ -12,12 +12,20 @@ export const routes: Routes = [
         path: "text",
         // GUARD
         loadComponent: () => import("../app/text/text.component")
-            .then(c => c.TextComponent)
+            .then(c => c.TextComponent),
+        // canActivate: [!isLoggedInGuard]
     },
     {
         path: "login",
-        canActivate: [authGuard],
         loadComponent: () => import("../app/login-page/login-page.component")
-            .then(c => c.LoginPageComponent)
+            .then(c => c.LoginPageComponent),
+        canActivate: [isLoggedInGuard]
+    },
+    {
+        path: "register",
+        loadComponent: () => import("../app/register/register.component")
+            .then(c => c.RegisterComponent),
+        canActivate: [isLoggedInGuard]
     }
 ];
+
