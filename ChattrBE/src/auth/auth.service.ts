@@ -7,6 +7,9 @@ import { User } from 'src/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { IAccessTokenPayload, IJwt } from 'src/models/access-token-payload';
+import { AddUserDto } from 'src/dtos/add-user.dto';
+import { Role } from 'src/models/role.enum';
+import { AddRoleDto } from 'src/dtos/add-role.dto';
 
 
 @Injectable()
@@ -20,7 +23,7 @@ export class AuthService {
     ) { }
 
 
-    addUser = async (user: User): Promise<User> => {
+    addUser = async (user: AddUserDto): Promise<User> => {
         if (await this.userService.findOneByEmail(user.email)) {
             throw new BadRequestException('User already exists');
         }
@@ -44,6 +47,10 @@ export class AuthService {
     }
 
     async loginWithToken(token: IJwt) {
+        return await this.decipherTokenToPayload(token);
+    }
+
+    async decipherTokenToPayload(token: IJwt) {
         const verifiedToken = await this.jwtService.verifyAsync<IAccessTokenPayload>(
             token.token,
             {
@@ -57,6 +64,30 @@ export class AuthService {
                 throw new UnauthorizedException('Token is invalid');
             }
         });
+
         return verifiedToken;
+    }
+
+    async addRole(addRoleDto: AddRoleDto) {
+        const user = await this.userService.findOneById(addRoleDto.userId);
+
+        if (!user) {
+            throw new BadRequestException('User not found');
+        }
+
+        if (!addRoleDto.role) {
+            throw new BadRequestException('Wrong role');
+        }
+
+        if (user.role.includes(addRoleDto.role as Role)) {
+            throw new BadRequestException('User is already a ' + addRoleDto.role);
+        }
+
+        user.role.push(addRoleDto.role as Role);
+
+        await this.userRepository.save(user);
+
+        return user;
+
     }
 }

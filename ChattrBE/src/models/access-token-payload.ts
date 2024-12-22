@@ -1,4 +1,6 @@
+import { AddUserDto } from "src/dtos/add-user.dto";
 import { User } from "src/entities/user.entity";
+import { Role } from "./role.enum";
 
 export interface IJwt {
     token: string;
@@ -7,6 +9,7 @@ export interface IJwt {
 export interface IAccessTokenPayload {
     sub: number;
     email: string;
+    roles: Role[];
 }
 export class AccessTokenPayloadParser {
 
@@ -14,6 +17,7 @@ export class AccessTokenPayloadParser {
         return {
             sub: user.id,
             email: user.email,
+            roles: user.role
         };
     };
 }

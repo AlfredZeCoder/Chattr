@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { Role } from "src/models/role.enum";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 
 @Entity()
@@ -19,4 +20,11 @@ export class User {
 
     @Column()
     password: string;
+
+    @Column('varchar', {
+        array: true,
+        nullable: true,
+        default: [Role.User]
+    })
+    role: Role[];
 }
