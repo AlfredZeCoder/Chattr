@@ -24,9 +24,25 @@ export class AuthService {
 
 
     addUser = async (user: AddUserDto): Promise<User> => {
+        if (!user.firstName) {
+            throw new BadRequestException('First name is required');
+        }
+
+        if (!user.lastName) {
+            throw new BadRequestException('Last name is required');
+        }
+
+        if (!user.email) {
+            throw new BadRequestException('Email is required');
+        }
+        if (!user.password) {
+            throw new BadRequestException('Password is required');
+        }
+
         if (await this.userService.findOneByEmail(user.email)) {
             throw new BadRequestException('User already exists');
         }
+
         let newUser = this.userRepository.create(user);
         newUser.password = await this.hashingService.hashPassword(user.password);
         newUser = await this.userRepository.save(newUser);
@@ -34,7 +50,17 @@ export class AuthService {
     };
 
     async login(loginDto: LogInDto) {
+
+        if (!loginDto.email) {
+            throw new BadRequestException('Email is required');
+        }
+
+        if (!loginDto.password) {
+            throw new BadRequestException('Password is required');
+        }
+
         const user = await this.userService.findOneByEmail(loginDto.email);
+
         if (!user) {
             throw new BadRequestException('User not found');
         }
@@ -47,10 +73,18 @@ export class AuthService {
     }
 
     async loginWithToken(token: IJwt) {
+        if (!token.token) {
+            throw new BadRequestException('Token is required');
+        }
+
         return await this.decipherTokenToPayload(token);
     }
 
     async decipherTokenToPayload(token: IJwt) {
+        if (!token.token) {
+            throw new BadRequestException('Token is required');
+        }
+
         const verifiedToken = await this.jwtService.verifyAsync<IAccessTokenPayload>(
             token.token,
             {
@@ -69,6 +103,14 @@ export class AuthService {
     }
 
     async addRole(addRoleDto: AddRoleDto) {
+        if (!addRoleDto.userId) {
+            throw new BadRequestException('User ID is required');
+        }
+
+        if (!addRoleDto.role) {
+            throw new BadRequestException('Role is required');
+        }
+
         const user = await this.userService.findOneById(addRoleDto.userId);
 
         if (!user) {

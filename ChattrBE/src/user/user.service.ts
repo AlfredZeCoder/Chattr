@@ -17,6 +17,9 @@ export class UserService {
     };
 
     findOneById = async (id: number): Promise<User | null> => {
+        if (!id) {
+            throw new Error('User ID is required');
+        }
         const user = this.userRepository.findOneBy({ id });
         if (!user) {
             throw new Error('User not found');
@@ -25,10 +28,10 @@ export class UserService {
     };
 
     findOneByEmail = async (email: string): Promise<User> => {
-        const user = await this.userRepository.findOne({
-            where: { email }
-        });
-
+        if (!email) {
+            throw new Error('Email is required');
+        }
+        const user = await this.userRepository.findOneBy({ email });
         return user;
     };
 
