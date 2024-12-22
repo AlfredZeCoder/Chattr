@@ -87,6 +87,7 @@ export class LoginPageComponent {
       next: (token) => {
         this.authService.isLoggedIn$.next(true);
         this.authService.putTokenInCookies(token);
+        this.router.navigate(['/text']);
       },
       error: (error) => {
         this.loginDenied$.next(true);
