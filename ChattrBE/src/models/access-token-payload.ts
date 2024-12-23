@@ -1,6 +1,8 @@
 import { AddUserDto } from "src/dtos/add-user.dto";
 import { User } from "src/entities/user.entity";
 import { Role } from "./role.enum";
+import { IsNotEmpty } from "class-validator";
+import { ApiParam } from "@nestjs/swagger";
 
 export interface IJwt {
     token: string;

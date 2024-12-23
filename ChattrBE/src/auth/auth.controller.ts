@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Put, UnauthorizedException } from '@nestjs/common';
+import { Body, Controller, Post, Put, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LogInDto } from 'src/dtos/login.dto';
 import { AccessTokenPayloadParser, IAccessTokenPayload, IJwt } from 'src/models/access-token-payload';
@@ -7,8 +7,11 @@ import { UserService } from 'src/user/user.service';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { AddUserDto } from 'src/dtos/add-user.dto';
 import { AddRoleDto } from 'src/dtos/add-role.dto';
+import { AuthGuard } from './guards/auth.guard';
+import { Public } from 'src/decorators/public.decorator';
 
 @Controller('auth')
+@UseGuards(AuthGuard)
 @ApiBearerAuth()
 export class AuthController {
     constructor(
@@ -17,6 +20,7 @@ export class AuthController {
         private userService: UserService
     ) { }
 
+    @Public()
     @Post('add')
     async addUser(@Body() userP: AddUserDto) {
         const user = await this.authService.addUser(userP);
@@ -26,7 +30,7 @@ export class AuthController {
         };
 
     }
-
+    @Public()
     @Post('login')
     async login(@Body() loginDto: LogInDto) {
 
@@ -38,6 +42,7 @@ export class AuthController {
 
     }
 
+    @Public()
     @Post('login-with-token')
     async loginWithToken(@Body() token: IJwt) {
         const payload = <IAccessTokenPayload>await this.authService.loginWithToken(token);

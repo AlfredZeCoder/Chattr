@@ -5,8 +5,10 @@ import { RoleGuard } from 'src/auth/guards/role.guard';
 import { Roles } from 'src/decorators/roles.decorator';
 import { Role } from 'src/models/role.enum';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
 
 @Controller('user')
+@UseGuards(AuthGuard)
 @ApiBearerAuth()
 export class UserController {
 
