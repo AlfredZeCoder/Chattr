@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import { HashingService } from 'src/auth/hashing.service';
@@ -18,18 +18,18 @@ export class UserService {
 
     findOneById = async (id: number): Promise<User | null> => {
         if (!id) {
-            throw new Error('User ID is required');
+            throw new BadRequestException('User ID is required');
         }
-        const user = this.userRepository.findOneBy({ id });
+        const user = await this.userRepository.findOneBy({ id });
         if (!user) {
-            throw new Error('User not found');
+            throw new BadRequestException('User not found');
         }
         return user;
     };
 
     findOneByEmail = async (email: string): Promise<User> => {
         if (!email) {
-            throw new Error('Email is required');
+            throw new BadRequestException('Email is required');
         }
         const user = await this.userRepository.findOneBy({ email });
         return user;

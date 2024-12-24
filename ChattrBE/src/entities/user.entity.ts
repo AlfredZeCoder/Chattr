@@ -23,8 +23,16 @@ export class User {
 
     @Column('varchar', {
         array: true,
-        nullable: true,
+        nullable: false,
         default: [Role.User]
     })
     role: Role[];
+
+    @Column('int', {
+        array: true,
+        nullable: false,
+        default: []
+    })
+    conversationsId: number[];
+
 }

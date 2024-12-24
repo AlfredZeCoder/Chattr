@@ -7,6 +7,9 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { JwtModule } from "@nestjs/jwt";
 import { ConfigModule, ConfigService } from "@nestjs/config";
+import { Conversation } from "./entities/conversation.entity";
+import { Message } from "./entities/message.entity";
+import { ConversationModule } from './conversation/conversation.module';
 
 @Module({
   imports: [
@@ -24,7 +27,11 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
         username: configService.get('DB_USERNAME'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME'),
-        entities: [User],
+        entities: [
+          User,
+          Conversation,
+          Message
+        ],
         synchronize: true,
       }),
     }),
@@ -39,6 +46,7 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
     }),
     UserModule,
     AuthModule,
+    ConversationModule,
 
   ],
   controllers: [AppController],
