@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AddConversationDto } from 'src/dtos/add-conversation.dto';
 import { Conversation } from 'src/entities/conversation.entity';
@@ -21,12 +21,12 @@ export class ConversationService {
     }
 
     async createConversation(conversation: AddConversationDto): Promise<Conversation> {
-        if (!conversation.askedUserId) {
-            throw new BadRequestException('Asked user id is required');
-        }
-
         if (!conversation.createrUserId) {
             throw new BadRequestException('Creater id is required');
+        }
+
+        if (!conversation.askedUserId) {
+            throw new BadRequestException('Asked user id is required');
         }
 
         if (conversation.askedUserId === conversation.createrUserId) {
@@ -41,18 +41,21 @@ export class ConversationService {
             conversation.askedUserId
         );
 
-        const newConversation = await this.conversationRepository.save(conv);
-
-        console.log(newConversation);
-
-        console.log(createrUser);
-        console.log(askedUser);
+        const newConversation = await this.conversationRepository.save(conv)
+            .catch(_ => {
+                throw new BadRequestException('Failed to save conversation');
+            });
 
         createrUser.conversationsId.push(newConversation.id);
         askedUser.conversationsId.push(newConversation.id);
 
-        await this.userRepository.save(createrUser);
-        await this.userRepository.save(askedUser);
+        try {
+            await this.userRepository.save(createrUser);
+            await this.userRepository.save(askedUser);
+        } catch (error) {
+            await this.conversationRepository.delete(newConversation.id);
+            throw new BadRequestException('Failed to save conversation');
+        }
 
         return newConversation;
     }
