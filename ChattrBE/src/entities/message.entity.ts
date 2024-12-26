@@ -1,5 +1,4 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
-import { Conversation } from "./conversation.entity";
 
 
 @Entity()

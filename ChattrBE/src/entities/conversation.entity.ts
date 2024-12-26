@@ -18,11 +18,4 @@ export class Conversation {
 
     @Column()
     askedUserId: number;
-
-    @Column('int', {
-        array: true,
-        nullable: false,
-    })
-    messagesId: number[];
-
 }
