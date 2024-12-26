@@ -20,6 +20,38 @@ export class ConversationService {
         return await this.conversationRepository.find();
     }
 
+    async getConversationById(id: number): Promise<Conversation> {
+        if (!id) {
+            throw new BadRequestException('Conversation id is required');
+        }
+        const conversation = await this.conversationRepository.findOneBy({ id });
+        if (!conversation) {
+            throw new BadRequestException('Conversation not found');
+        }
+        return conversation;
+    }
+
+    async getAllConversationsByUserId(userId: number): Promise<Conversation[]> {
+        const user = await this.userService.findOneById(userId);
+        const conversations: Conversation[] = await Promise.all(
+            user.conversationsId.map((conversationId) =>
+                this.getConversationById(conversationId)
+            )
+        );
+        return conversations;
+    }
+
+    async getOneConversationByUserId(conversationId: number, userId: number): Promise<Conversation> {
+        const conversation = await this.getConversationById(conversationId);
+        await this.userService.findOneById(userId);
+
+        if (conversation.createrUserId == userId || conversation.askedUserId == userId) {
+            return conversation;
+        } else {
+            throw new BadRequestException('User is not part of this conversation');
+        }
+    }
+
     async createConversation(conversation: AddConversationDto): Promise<Conversation> {
         if (!conversation.createrUserId) {
             throw new BadRequestException('Creater id is required');
