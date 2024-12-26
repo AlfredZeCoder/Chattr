@@ -21,7 +21,7 @@ export class Conversation {
 
     @Column('int', {
         array: true,
-        nullable: true,
+        nullable: false,
     })
     messagesId: number[];
 
