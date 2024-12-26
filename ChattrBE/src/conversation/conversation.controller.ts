@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, Req } from '@nestjs/common';
 import { ConversationService } from './conversation.service';
 import { AddConversationDto } from 'src/dtos/add-conversation.dto';
+import { RouteInfoPathExtractor } from '@nestjs/core/middleware/route-info-path-extractor';
 
 @Controller('conversation')
 export class ConversationController {
@@ -14,6 +15,15 @@ export class ConversationController {
         return await this.conversationService.getAllConversations();
     }
 
+    @Get('all/:userId')
+    async findAllByUserId(@Param('userId') userId: number) {
+        return await this.conversationService.getAllConversationsByUserId(userId);
+    }
+
+    @Get('one/:conversationId/:userId')
+    async findOneByUserId(@Param('conversationId') conversationId: number, @Param('userId') userId: number) {
+        return await this.conversationService.getOneConversationByUserId(conversationId, userId);
+    }
 
     @Post('add')
     async addConversation(@Body() conversation: AddConversationDto) {
