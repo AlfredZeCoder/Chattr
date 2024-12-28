@@ -35,7 +35,6 @@ export class LoginPageComponent {
   isLoading$ = new BehaviorSubject<boolean>(false);
 
   ngAfterViewInit() {
-    this.isLoading$.subscribe(console.log);
     setTimeout(() => {
       this.opacity$.next(1);
     }, 0);
