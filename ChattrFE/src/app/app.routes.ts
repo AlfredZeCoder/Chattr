@@ -1,5 +1,8 @@
 import { Routes } from '@angular/router';
 import { isLoggedInGuard } from './guards/is-logged-in.guard';
+import { ConversationComponent } from './conversation/conversation.component';
+import { RegisterComponent } from '../app/register/register.component';
+import { ChatComponent } from './chat/chat.component';
 
 export const routes: Routes = [
     {
@@ -10,10 +13,19 @@ export const routes: Routes = [
     },
     {
         path: "chat",
-        // GUARD
-        loadComponent: () => import("./conversation/conversation.component")
-            .then(c => c.ConversationComponent),
-        // canActivate: [!isLoggedInGuard]
+        loadComponent: () => import("./chat/chat.component")
+            .then(c => c.ChatComponent),
+        children: [
+            {
+                path: "conversation",
+                component: ConversationComponent,
+
+            },
+            {
+                path: "**",
+                redirectTo: ""
+            }
+        ]
     },
     {
         path: "login",
