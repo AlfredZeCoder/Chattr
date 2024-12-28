@@ -32,8 +32,10 @@ export class LoginPageComponent {
   loginDenied$ = new BehaviorSubject<boolean>(false);
   hasClikedSubmit = false;
   opacity$ = new BehaviorSubject<number>(0);
+  isLoading$ = new BehaviorSubject<boolean>(false);
 
   ngAfterViewInit() {
+    this.isLoading$.subscribe(console.log);
     setTimeout(() => {
       this.opacity$.next(1);
     }, 0);
@@ -44,6 +46,7 @@ export class LoginPageComponent {
     this.passwordIsInvalid$.unsubscribe();
     this.loginDenied$.unsubscribe();
     this.opacity$.unsubscribe();
+    this.isLoading$.unsubscribe();
   }
 
   checkLoginFormValidity() {
@@ -80,19 +83,25 @@ export class LoginPageComponent {
     if (!this.checkLoginFormValidity()) {
       return;
     }
-    this.authService.loginWithCredentials$(
-      this.loginInForm.value.email!,
-      this.loginInForm.value.password!
-    ).subscribe({
-      next: (token) => {
-        this.authService.isLoggedIn$.next(true);
-        this.authService.putTokenInCookies(token);
-        this.router.navigate(['/text']);
-      },
-      error: (error) => {
-        this.loginDenied$.next(true);
-      }
-    });
+    this.isLoading$.next(true);
+
+    setTimeout(() => { // Simulate a server request
+      this.authService.loginWithCredentials$(
+        this.loginInForm.value.email!,
+        this.loginInForm.value.password!
+      ).subscribe({
+        next: (token) => {
+          this.authService.isLoggedIn$.next(true);
+          this.authService.putTokenInCookies(token);
+          this.isLoading$.next(false);
+          this.router.navigate(['/text']);
+        },
+        error: (error) => {
+          this.loginDenied$.next(true);
+          this.isLoading$.next(false);
+        }
+      });
+    }, 2000);
   }
 
   formValidityCssControl = () => {

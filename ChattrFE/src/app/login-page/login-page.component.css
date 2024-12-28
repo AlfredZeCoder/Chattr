@@ -89,6 +89,28 @@
     transition: background-color .17s;
 }
 
+.form button .spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 22px;
+}
+
+.spinner-container .spinner {
+    border: 4px solid rgba(163, 163, 163, 0.1);
+    border-left-color: #dbdbdb;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 .register {
     display: flex;
     justify-content: center;

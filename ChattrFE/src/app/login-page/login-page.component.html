@@ -13,7 +13,16 @@
             <input formControlName="password" class="password" type="password" placeholder="Password"
                 [ngStyle]="{'box-shadow': (passwordIsInvalid$ | async) ? '0 0 10px rgb(255, 175, 175)' : null}"
                 (keyup)="onKeyUp('password')">
-            <button (click)="submitForm()" type=" submit" class="login">Login</button>
+            <button [disabled]="isLoading$ | async" (click)="submitForm()" type=" submit" class="login"
+                [ngStyle]="{'cursor': (isLoading$ | async) ? 'not-allowed' : null, 'background-color': (isLoading$ | async) ? '#414750' : null}">
+                @if (isLoading$ | async) {
+                <div class="spinner-container">
+                    <div class="spinner"></div>
+                </div>
+                } @else {
+                Login
+                }
+            </button>
         </form>
         <div class="register">
             <div class="line"></div>

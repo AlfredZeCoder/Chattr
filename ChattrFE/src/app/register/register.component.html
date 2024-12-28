@@ -10,7 +10,7 @@
         </div>
         <div class="title">
             <h3>Enter your informations</h3>
-            @if (loginDenied$ | async) {
+            @if (registerDenied$ | async) {
             <h5>Email is already in use</h5>
             }
         </div>
@@ -27,7 +27,16 @@
             <input formControlName="password" class="password" type="password" placeholder="Password"
                 [ngStyle]="{'box-shadow': (passwordIsInvalid$ | async) ? '0 0 10px rgb(255, 175, 175)' : null}"
                 (keyup)="onKeyUp('password')">
-            <button (click)="submitForm()" type="submit" class="create-account">Create account</button>
+            <button [disabled]="isLoading$ | async" (click)="submitForm()" type="submit" class="create-account"
+                [ngStyle]="{'cursor': (isLoading$ | async) ? 'not-allowed' : null, 'background-color': (isLoading$ | async) ? '#414750' : null}">
+                @if (isLoading$ | async) {
+                <div class="spinner-container">
+                    <div class="spinner"></div>
+                </div>
+                } @else {
+                Create account
+                }
+            </button>
         </form>
     </div>
 </div>

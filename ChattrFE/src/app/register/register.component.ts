@@ -36,8 +36,9 @@ export class RegisterComponent {
   lastNameIsInvalid$ = new BehaviorSubject<boolean>(false);
   emailIsInvalid$ = new BehaviorSubject<boolean>(false);
   passwordIsInvalid$ = new BehaviorSubject<boolean>(false);
-  loginDenied$ = new BehaviorSubject<boolean>(false);
+  registerDenied$ = new BehaviorSubject<boolean>(false);
   hasClikedSubmit = false;
+  isLoading$ = new BehaviorSubject<boolean>(false);
 
   opacity = 0;
   arrowTransform = false;
@@ -106,6 +107,7 @@ export class RegisterComponent {
     if (!this.checkLoginFormValidity()) {
       return;
     }
+    this.isLoading$.next(true);
 
     const user: User = {
       firstName: this.registerForm.value.firstName!,
@@ -118,13 +120,14 @@ export class RegisterComponent {
       next: (token) => {
         this.authService.isLoggedIn$.next(true);
         this.authService.putTokenInCookies(token);
+        this.isLoading$.next(false);
         this.router.navigate(['/text']);
       },
       error: (error) => {
         if (error.error.message === 'User already exists') {
-          this.loginDenied$.next(true);
-          console.log('User already exists');
+          this.registerDenied$.next(true);
         }
+        this.isLoading$.next(false);
       }
     });
 
