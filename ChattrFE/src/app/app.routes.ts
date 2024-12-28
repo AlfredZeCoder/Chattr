@@ -9,10 +9,10 @@ export const routes: Routes = [
 
     },
     {
-        path: "text",
+        path: "chat",
         // GUARD
-        loadComponent: () => import("../app/text/text.component")
-            .then(c => c.TextComponent),
+        loadComponent: () => import("./conversation/conversation.component")
+            .then(c => c.ConversationComponent),
         // canActivate: [!isLoggedInGuard]
     },
     {

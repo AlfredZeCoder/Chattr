@@ -13,7 +13,7 @@ export const isLoggedInGuard: CanActivateFn = async (route, state) => {
   );
 
   if (isLoggedIn) {
-    router.navigate(['/text']);
+    router.navigate(['/chat']);
     return false; // Blocks access to the login page
   } else {
     return true; // Allows access to the login page

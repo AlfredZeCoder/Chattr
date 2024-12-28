@@ -93,7 +93,7 @@ export class LoginPageComponent {
           this.authService.isLoggedIn$.next(true);
           this.authService.putTokenInCookies(token);
           this.isLoading$.next(false);
-          this.router.navigate(['/text']);
+          this.router.navigate(['/chat']);
         },
         error: (error) => {
           this.loginDenied$.next(true);
