@@ -1,2 +1,3 @@
 Gosser toute la réactivitée du FE avec CSS
 Peut-être lazyloader les conversations, genre 25 à la foix max (BACKEND AUSSI PEUTETRE)
+AddmessageModule - ajout d'un message dans une conversation (avec tous les error catch), verifier si la sender est bel et bien le sender, faire un controller, guarder le controller
