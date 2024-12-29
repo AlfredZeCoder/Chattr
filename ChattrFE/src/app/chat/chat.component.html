@@ -1,0 +1,35 @@
+<div class="container">
+    <div class="chat-container">
+        <div class="conversations-container">
+            <div class="search-bar">
+                <input [(ngModel)]="searchValue" type="text" class="search" placeholder="Search" />
+            </div>
+            <div class="conversations">
+                @for (conversation of mockConversations; track conversation) {
+                @if (conversation.name.toLowerCase().startsWith(searchValue.toLowerCase())) {
+                <div class="conversation" (click)="getConversation(conversation)"
+                    [ngStyle]="{ 'background-color': hasClickedConversation && conversation.id == clickedConversationId ? '#636b77' : null }">
+                    <div class="name-and-time">
+                        <div class="name"
+                            [ngStyle]="{ 'color': hasClickedConversation && conversation.id == clickedConversationId ? 'rgb(218, 220, 224)' : null }">
+                            {{ conversation.name }}
+                        </div>
+                        <div class="time"
+                            [ngStyle]="{ 'color': hasClickedConversation && conversation.id == clickedConversationId ? 'rgb(218, 220, 224)' : null }">
+                            {{ conversation.time }}
+                        </div>
+                    </div>
+                    <div class="last-message"
+                        [ngStyle]="{ 'color': hasClickedConversation && conversation.id == clickedConversationId ? 'rgb(189, 195, 196)' : null }">
+                        {{ conversation.lastMessage | truncate: 25 }}
+                    </div>
+                </div>
+                }
+                }
+            </div>
+        </div>
+        <div class="chat">
+            <router-outlet></router-outlet>
+        </div>
+    </div>
+</div>

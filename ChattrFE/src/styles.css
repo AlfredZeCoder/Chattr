@@ -1,7 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
 :root {
     --gray-text: rgb(149, 165, 166);
-
     --soft-gray-border: rgb(206, 206, 206);
     --soft-gray-underline: rgb(218, 220, 224);
     --kubernetes-blue: #326CE5;
