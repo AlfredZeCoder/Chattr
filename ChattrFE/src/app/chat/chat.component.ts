@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, Injectable } from '@angular/core';
 import { TruncatePipe } from '../pipes/truncate.pipe';
 import { FormsModule } from '@angular/forms';
 import { NgStyle } from '@angular/common';
 import { Router, RouterOutlet } from '@angular/router';
+
 
 @Component({
   selector: 'app-text',
