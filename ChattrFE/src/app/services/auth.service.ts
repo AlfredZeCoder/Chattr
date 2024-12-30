@@ -40,6 +40,9 @@ export class AuthService {
   };
 
   putTokenInCookies = (token: Token) => {
+    if (this.cookieService.check('access_token')) {
+      this.cookieService.delete('access_token');
+    }
     this.cookieService.set('access_token', token.token);
   };
 

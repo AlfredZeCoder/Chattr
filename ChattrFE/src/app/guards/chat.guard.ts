@@ -3,7 +3,7 @@ import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { filter, firstValueFrom } from 'rxjs';
 
-export const IsLoggedInGuard: CanActivateFn = async (route, state) => {
+export const ChatGuard: CanActivateFn = async (route, state) => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
@@ -17,9 +17,9 @@ export const IsLoggedInGuard: CanActivateFn = async (route, state) => {
   );
 
   if (isLoggedIn) {
-    router.navigate(['/chat']);
-    return false;
-  } else {
     return true;
+  } else {
+    router.navigate(['/login']);
+    return false;
   }
 };
