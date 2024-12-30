@@ -1,0 +1,43 @@
+:host {
+    display: flex;
+    height: 100%;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+}
+
+.container .chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.container .send-message-container {
+    height: 10%;
+    border: 1px solid yellow;
+}
+
+.chat-container .left-text {
+    font-size: 15px;
+    width: fit-content;
+    padding: 7px 10px;
+    margin: 10px;
+    border-radius: 15px;
+    background-color: rgb(228, 228, 228);
+}
+
+.chat-container .right-text {
+    font-size: 15px;
+    color: rgb(224, 224, 224);
+    width: fit-content;
+    align-self: flex-end;
+    padding: 7px 10px;
+    margin: 10px;
+    border-radius: 15px;
+    background-color: #1F8AFF;
+}
