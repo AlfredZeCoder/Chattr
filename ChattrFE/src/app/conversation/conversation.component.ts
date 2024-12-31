@@ -1,12 +1,17 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { NgStyle } from '@angular/common';
+import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-conversation',
-  imports: [],
+  imports: [
+    NgStyle,
+    FormsModule,
+  ],
   templateUrl: './conversation.component.html',
   styleUrl: './conversation.component.css'
 })
-export class ConversationComponent implements OnInit {
+export class ConversationComponent implements OnInit, AfterViewInit {
 
   @Input() conversation: any;
 
@@ -14,6 +19,13 @@ export class ConversationComponent implements OnInit {
 
   }
 
+  ngAfterViewInit(): void {
+    this.scrollToBottom("ngAfterViewInit");
+  }
+  @ViewChild('chatContainer')
+  chatContainer?: ElementRef;
+
+  newText: string = '';
   userId: number = 1;
 
   mockTexts = [
@@ -24,6 +36,7 @@ export class ConversationComponent implements OnInit {
       senderId: 1,
       timestamp: new Date('2023-10-01T10:00:00')
     },
+
     {
       id: 2,
       conversationId: 1,
@@ -182,10 +195,40 @@ export class ConversationComponent implements OnInit {
       id: 24,
       conversationId: 12,
       message: 'That is good to hear',
-      senderId: 2,
+      senderId: 1,
       timestamp: new Date('2023-10-01T10:23:00')
-    }
+    },
+    {
+      id: 25,
+      conversationId: 1,
+      message: 'Hello!',
+      senderId: 1,
+      timestamp: new Date('2023-10-01T10:24:00')
+    },
   ].sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
 
+
+  scrollToBottom(from: string): void {
+    setTimeout(() => {
+      const container = this.chatContainer!.nativeElement;
+      container.scroll({
+        top: container.scrollHeight,
+        behavior: from == "ngAfterViewInit" ? 'auto' : 'smooth'
+      });
+    }, 0);
+  }
+
+  sendMessage(message: string) {
+    this.scrollToBottom("sendMessage");
+    this.mockTexts.push({
+      id: this.mockTexts.length + 1,
+      conversationId: this.conversation.id,
+      message: message,
+      senderId: this.userId,
+      timestamp: new Date()
+    });
+    this.newText = '';
+
+  }
 
 }
