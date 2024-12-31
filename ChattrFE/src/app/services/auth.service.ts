@@ -67,12 +67,14 @@ export class AuthService {
   };
 
   putTokenInCookies = (token: Token) => {
-    if (this.cookieService.check('access_token')) {
-      document.cookie = 'access_token=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/';
-    }
-    this.cookieService.set('access_token', token.token, {
-      expires: 1,
-    });
+    this.cookieService.set(
+      'access_token',
+      token.token,
+      {
+        expires: 1,
+        path: '/',
+      }
+    );
   };
 
   register$ = (user: AddUser) => {
