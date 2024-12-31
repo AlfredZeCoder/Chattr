@@ -3,6 +3,7 @@ import { TruncatePipe } from '../pipes/truncate.pipe';
 import { FormsModule } from '@angular/forms';
 import { NgStyle } from '@angular/common';
 import { Router, RouterOutlet } from '@angular/router';
+import { ConversationComponent } from "../conversation/conversation.component";
 
 @Component({
   selector: 'app-text',
@@ -10,7 +11,7 @@ import { Router, RouterOutlet } from '@angular/router';
     TruncatePipe,
     FormsModule,
     NgStyle,
-    RouterOutlet
+    ConversationComponent
   ],
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.css'
@@ -24,6 +25,7 @@ export class ChatComponent {
   searchValue: string = '';
   hasClickedConversation: boolean = false;
   clickedConversationId: number = 0;
+  inputConversation: any;
   mockConversations = [
     {
       id: 1,
@@ -208,6 +210,7 @@ export class ChatComponent {
   ];
 
   getConversation(conversation: any) {
+    this.inputConversation = conversation;
     this.clickedConversationId = conversation.id;
     this.hasClickedConversation = true;
     this.router.navigate(['/chat/conversation']);
