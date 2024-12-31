@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
-import { RouterOutlet, RouterLink } from '@angular/router';
+import { RouterOutlet, RouterLink, Router } from '@angular/router';
 import { AuthService } from './services/auth.service';
 import { CookieService } from 'ngx-cookie-service';
+import { switchMap, tap } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -15,7 +16,8 @@ import { CookieService } from 'ngx-cookie-service';
 export class AppComponent {
   constructor(
     private authService: AuthService,
-    private cookieService: CookieService
+    private cookieService: CookieService,
+    private router: Router
   ) { }
 
   ngOnInit() {
@@ -23,16 +25,25 @@ export class AppComponent {
     if (!token) {
       this.authService.isLoggedIn$.next(false);
     }
+
     if (token) {
-      this.authService.loginWithToken$(token).subscribe({
-        next: (token) => {
-          this.authService.putTokenInCookies(token);
-          this.authService.isLoggedIn$.next(true);
-        },
-        error: (error) => {
-          console.error(error);
-        }
-      });
+      this.authService.loginWithToken$(token)
+        .pipe(
+          tap((token) => {
+            this.authService.putTokenInCookies(token);
+            this.authService.isLoggedIn$.next(true);
+          }),
+          switchMap((token) => this.authService.saveUserInfos$(token.token))
+        )
+        .subscribe({
+          next: (user) => {
+            this.authService.user$.next(user);
+          },
+          error: () => {
+            this.authService.isLoggedIn$.next(false);
+            this.router.navigate(['/login']);
+          }
+        });
     }
   }
 }

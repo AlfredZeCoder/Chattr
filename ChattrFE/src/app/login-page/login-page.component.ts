@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { AsyncPipe, NgStyle } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, map, switchMap, tap } from 'rxjs';
 import { Router } from '@angular/router';
 
 @Component({
@@ -88,18 +88,24 @@ export class LoginPageComponent {
       this.authService.loginWithCredentials$(
         this.loginInForm.value.email!,
         this.loginInForm.value.password!
-      ).subscribe({
-        next: (token) => {
+      ).pipe(
+        tap((token) => {
           this.authService.isLoggedIn$.next(true);
           this.authService.putTokenInCookies(token);
           this.isLoading$.next(false);
-          this.router.navigate(['/chat']);
-        },
-        error: (error) => {
-          this.loginDenied$.next(true);
-          this.isLoading$.next(false);
-        }
-      });
+        }),
+        switchMap((token) => this.authService.saveUserInfos$(token.token)),
+      )
+        .subscribe({
+          next: (user) => {
+            this.authService.user$.next(user);
+            this.router.navigate(['/chat']);
+          },
+          error: () => {
+            this.loginDenied$.next(true);
+            this.isLoading$.next(false);
+          }
+        });
     }, 2000);
   }
 

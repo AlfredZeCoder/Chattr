@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { HashingService } from './hashing.service';
@@ -12,11 +12,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
-    UserModule,
+    forwardRef(() => UserModule),
     JwtModule
   ],
   controllers: [AuthController],
   providers: [AuthService, HashingService, UserService],
-  // exports: [HashingService],
+  exports: [AuthService],
 })
 export class AuthModule { }

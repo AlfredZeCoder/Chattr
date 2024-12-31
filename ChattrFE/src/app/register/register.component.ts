@@ -2,9 +2,9 @@ import { Component } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AsyncPipe, NgStyle } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, switchMap, tap } from 'rxjs';
 import { AuthService } from '../services/auth.service';
-import { User } from '../models/user.interface';
+import { AddUser } from '../models/add-user.interface';
 import { ErrorMessage } from '../models/error-message.interface';
 
 @Component({
@@ -109,27 +109,34 @@ export class RegisterComponent {
     }
     this.isLoading$.next(true);
 
-    const user: User = {
+    const user: AddUser = {
       firstName: this.registerForm.value.firstName!,
       lastName: this.registerForm.value.lastName!,
       email: this.registerForm.value.email!,
       password: this.registerForm.value.password!
     };
 
-    this.authService.register$(user).subscribe({
-      next: (token) => {
-        this.authService.isLoggedIn$.next(true);
-        this.authService.putTokenInCookies(token);
-        this.isLoading$.next(false);
-        this.router.navigate(['/chat']);
-      },
-      error: (error) => {
-        if (error.error.message === 'User already exists') {
-          this.registerDenied$.next(true);
+    this.authService.register$(user)
+      .pipe(
+        tap((token) => {
+          this.authService.isLoggedIn$.next(true);
+          this.authService.putTokenInCookies(token);
+          this.isLoading$.next(false);
+        }),
+        switchMap((token) => this.authService.saveUserInfos$(token.token))
+      )
+      .subscribe({
+        next: (user) => {
+          this.authService.user$.next(user);
+          this.router.navigate(['/chat']);
+        },
+        error: (error) => {
+          if (error.error.message === 'User already exists') {
+            this.registerDenied$.next(true);
+          }
+          this.isLoading$.next(false);
         }
-        this.isLoading$.next(false);
-      }
-    });
+      });
 
 
   }

@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { NgStyle } from '@angular/common';
 import { Router, RouterOutlet } from '@angular/router';
 
-
 @Component({
   selector: 'app-text',
   imports: [
@@ -19,7 +18,7 @@ import { Router, RouterOutlet } from '@angular/router';
 export class ChatComponent {
 
   constructor(
-    private router: Router
+    private router: Router,
   ) { }
 
   searchValue: string = '';
