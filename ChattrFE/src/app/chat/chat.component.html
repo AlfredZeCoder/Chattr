@@ -29,7 +29,10 @@
             </div>
         </div>
         <div class="chat">
-            <router-outlet></router-outlet>
+            @if (hasClickedConversation) {
+            <app-conversation [conversation]="inputConversation"></app-conversation>
+            }
+            <!-- <router-outlet></router-outlet> -->
         </div>
     </div>
 </div>

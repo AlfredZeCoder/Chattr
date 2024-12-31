@@ -1,0 +1,79 @@
+:host {
+    display: flex;
+    height: 100%;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+}
+
+.container .chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: auto;
+    position: relative;
+}
+
+.chat-container .text {
+    font-size: 15px;
+    width: fit-content;
+    padding: 7px 10px;
+    margin: 10px;
+    border-radius: 15px;
+}
+
+.container .send-message-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    height: 7%;
+    border-top: 1px solid rgb(226, 226, 226);
+}
+
+.send-message-container form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.send-message-container input {
+    resize: none;
+    width: 50%;
+    height: 30%;
+    border-radius: 15px;
+    padding: 10px;
+    font-size: 15px;
+    outline: none;
+    border: 1px solid #dcecf3;
+}
+
+
+.send-message-container button {
+    padding: 10px 20px;
+    border-radius: 50px;
+    background-color: #007bff;
+    color: white;
+    font-size: 12px;
+    border: none;
+    cursor: pointer;
+    transition: background-color .2s;
+}
+
+.send-message-container button:hover {
+    background-color: #166dc9;
+    transition: .2s;
+
+}
+
+.send-message-container button:hover>svg {
+    transition: .2s;
+    transform: translateY(-2px);
+
+}
