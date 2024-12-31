@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards , Headers} from '@nestjs/common';
 import { MessageService } from './message.service';
 import { get } from 'http';
 import { AddMessageDto } from 'src/dtos/add-message.dto';
+import { IsSelfUserGuard } from 'src/auth/guards/isselfuser.guard';
 
 @Controller('message')
 export class MessageController {
@@ -15,7 +16,8 @@ export class MessageController {
     }
 
     @Post('/add')
-    async addMessage(@Body() message : AddMessageDto){
+    @UseGuards(IsSelfUserGuard)
+    async addMessage(@Body() message : AddMessageDto, @Headers('Authorization') token: string) {
         return await this.messageService.addMessage(message);
     }
 }
