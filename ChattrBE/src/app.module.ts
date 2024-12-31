@@ -10,6 +10,7 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { Conversation } from "./entities/conversation.entity";
 import { Message } from "./entities/message.entity";
 import { ConversationModule } from './conversation/conversation.module';
+import { MessageModule } from './message/message.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { ConversationModule } from './conversation/conversation.module';
     UserModule,
     AuthModule,
     ConversationModule,
+    MessageModule,
 
   ],
   controllers: [AppController],
