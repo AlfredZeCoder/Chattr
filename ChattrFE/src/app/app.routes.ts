@@ -14,6 +14,18 @@ export const routes: Routes = [
         path: "chat",
         loadComponent: () => import("./chat/chat.component")
             .then(c => c.ChatComponent),
+        children: [
+            {
+                path: "conversation",
+                component: ConversationComponent,
+
+            },
+            {
+                path: "**",
+                redirectTo: "",
+                pathMatch: "full"
+            }
+        ],
         canActivate: [ChatGuard]
     },
     {

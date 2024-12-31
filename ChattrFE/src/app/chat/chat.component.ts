@@ -5,7 +5,6 @@ import { NgStyle } from '@angular/common';
 import { Router, RouterOutlet } from '@angular/router';
 import { ConversationComponent } from "../conversation/conversation.component";
 
-
 @Component({
   selector: 'app-text',
   imports: [
@@ -20,7 +19,7 @@ import { ConversationComponent } from "../conversation/conversation.component";
 export class ChatComponent {
 
   constructor(
-    private router: Router
+    private router: Router,
   ) { }
 
   searchValue: string = '';

@@ -6,7 +6,7 @@ export class GetUserDto {
     firstName: string;
     lastName: string;
     email: string;
-    roles: Role[];
+    conversationsId: number[];
 
     static toDto(entity: User) {
         const userDto = new GetUserDto();
@@ -14,7 +14,7 @@ export class GetUserDto {
         userDto.email = entity.email;
         userDto.firstName = entity.firstName;
         userDto.lastName = entity.lastName;
-        userDto.roles = entity.role;
+        userDto.conversationsId = entity.conversationsId;
         return userDto;
     }
 }
