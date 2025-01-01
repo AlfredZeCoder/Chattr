@@ -1,5 +1,6 @@
 export interface Conversation {
     id: number;
-    createdUserId: number;
-    askedUserId: number;
+    userName: string;
+    lastMessage: string;
+    time: any;
 }

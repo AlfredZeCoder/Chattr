@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { ConversationComponent } from './conversation/conversation.component';
+import { MessageComponent } from './message/message.component';
 import { ChatGuard } from './auth/guards/chat.guard';
 import { IsLoggedInGuard } from './auth/guards/is-logged-in.guard';
 
@@ -17,7 +17,7 @@ export const routes: Routes = [
         children: [
             {
                 path: "conversation",
-                component: ConversationComponent,
+                component: MessageComponent,
 
             },
             {

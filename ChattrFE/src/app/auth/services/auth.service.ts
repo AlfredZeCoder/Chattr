@@ -36,7 +36,7 @@ export class AuthService {
 
   saveUserInfos$ = (access_token: string) => {
     return this.httpClient.get<User>(
-      SERVER_URL + '/user/one-by-id',
+      SERVER_URL + '/user/one-by-id-from-token',
       {
         headers: {
           Authorization: `Bearer ${access_token}`

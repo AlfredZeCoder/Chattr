@@ -10,10 +10,10 @@ import { UserService } from 'src/user/user.service';
 export class MessageService {
     constructor(
         @InjectRepository(Message)
-        private messageRepository : Repository<Message>,
-        private conversationService : ConversationService,
-        private userService : UserService
-    ) {}
+        private messageRepository: Repository<Message>,
+        private conversationService: ConversationService,
+        private userService: UserService
+    ) { }
 
     async getAllMessagesFromConversation(conversationId: number): Promise<Message[]> {
         if (!conversationId) {
@@ -22,14 +22,31 @@ export class MessageService {
         const messages = await this.messageRepository.find(
             {
                 where: {
-                    conversationId : conversationId
+                    conversationId: conversationId
                 }
             }
         );
         return messages;
     }
 
-    async addMessage(message:AddMessageDto): Promise<void> {
+    async getLastMessageFromConversation(conversationId: number): Promise<Message> {
+        if (!conversationId) {
+            throw new BadRequestException('Conversation id is required');
+        }
+        const message = await this.messageRepository.findOne(
+            {
+                where: {
+                    conversationId: conversationId
+                },
+                order: {
+                    timestamp: 'DESC'
+                }
+            }
+        );
+        return message;
+    }
+
+    async addMessage(message: AddMessageDto): Promise<void> {
         if (!message.conversationId) {
             throw new BadRequestException('Conversation id is required');
         }

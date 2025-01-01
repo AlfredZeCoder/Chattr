@@ -84,7 +84,7 @@
     flex-direction: column;
     padding: 15px 0 7px 20px;
     width: auto;
-    height: 70px;
+    height: 55px;
     transition: background-color .2s;
     cursor: pointer;
 }

@@ -8,10 +8,10 @@ import { FormsModule } from '@angular/forms';
     NgStyle,
     FormsModule,
   ],
-  templateUrl: './conversation.component.html',
-  styleUrl: './conversation.component.css'
+  templateUrl: './message.component.html',
+  styleUrl: './message.component.css'
 })
-export class ConversationComponent implements OnInit, AfterViewInit {
+export class MessageComponent implements OnInit, AfterViewInit {
 
   @Input() conversation: any;
 

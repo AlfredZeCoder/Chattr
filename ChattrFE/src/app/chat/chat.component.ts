@@ -1,9 +1,15 @@
-import { Component, Injectable } from '@angular/core';
+import { Component, Injectable, OnInit } from '@angular/core';
 import { TruncatePipe } from '../pipes/truncate.pipe';
 import { FormsModule } from '@angular/forms';
 import { NgStyle } from '@angular/common';
-import { Router, RouterOutlet } from '@angular/router';
-import { ConversationComponent } from "../conversation/conversation.component";
+import { Router } from '@angular/router';
+import { MessageComponent } from "../message/message.component";
+import { ConversationProperties } from '../models/conversation-properties.interface';
+import { ChatService } from './chat.service';
+import { AuthService } from '../auth/services/auth.service';
+import { filter, firstValueFrom, map, switchMap, take } from 'rxjs';
+import { Conversation } from '../models/conversation.interface';
+import { UserService } from '../services/user.service';
 
 @Component({
   selector: 'app-text',
@@ -11,21 +17,75 @@ import { ConversationComponent } from "../conversation/conversation.component";
     TruncatePipe,
     FormsModule,
     NgStyle,
-    ConversationComponent
+    MessageComponent
   ],
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.css'
 })
-export class ChatComponent {
+export class ChatComponent implements OnInit {
 
   constructor(
     private router: Router,
+    private chatService: ChatService,
+    private authService: AuthService,
+    private userService: UserService
   ) { }
+
+  ngOnInit() {
+    this.authService.user$
+      .pipe(
+        filter(
+          (user) => user.id !== 0),
+        switchMap(
+          (user) =>
+            this.chatService.getAllConversationPropertiesFromUserId$(user.id)
+        ),
+      )
+      .subscribe((conversationProperties) => {
+        this.conversationsProperties = conversationProperties;
+        this.conversations = this.aggregateConversations();
+        this.conversations.map((conversation) => console.log(conversation));
+        console.log(this.conversationsProperties);
+      });
+
+    // console.log(this.aggregateConversations());
+  }
 
   searchValue: string = '';
   hasClickedConversation: boolean = false;
   clickedConversationId: number = 0;
   inputConversation: any;
+
+  conversationsProperties: ConversationProperties[] = [];
+
+  conversations: Conversation[] = [];
+
+  aggregateConversations() {
+    const conversations: Conversation[] = [];
+
+    this.conversationsProperties
+      .map((conversationProperty) => {
+        const conversation: Conversation = {
+          id: conversationProperty.id,
+          userName: "",
+          lastMessage: "",
+          time: new Date().getHours() + ':' + new Date().getMinutes()
+        };
+
+        this.userService.getOneById$(conversationProperty.askedUserId)
+          .subscribe((user) => {
+            conversation.userName = user.firstName + ' ' + user.lastName;
+          });
+
+        this.chatService.getLastMessageFromConversationId$(conversationProperty.id)
+          .subscribe((lastMessage) => {
+            console.log(lastMessage);
+            conversation.lastMessage = lastMessage.message;
+          });
+        conversations.push(conversation);
+      });
+    return conversations;
+  }
   mockConversations = [
     {
       id: 1,
