@@ -21,6 +21,8 @@
 .chat-container .text {
     font-size: 15px;
     width: fit-content;
+    word-wrap: break-word;
+    max-width: 350px;
     padding: 7px 10px;
     margin: 10px;
     border-radius: 15px;
