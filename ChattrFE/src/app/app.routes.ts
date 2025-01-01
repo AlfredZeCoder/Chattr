@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
-import { IsLoggedInGuard } from './guards/is-logged-in.guard';
 import { ConversationComponent } from './conversation/conversation.component';
-import { ChatGuard } from './guards/chat.guard';
+import { ChatGuard } from './auth/guards/chat.guard';
+import { IsLoggedInGuard } from './auth/guards/is-logged-in.guard';
 
 export const routes: Routes = [
     {
