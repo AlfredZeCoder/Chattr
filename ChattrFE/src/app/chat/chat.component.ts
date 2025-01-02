@@ -7,7 +7,7 @@ import { MessageComponent } from "../message/message.component";
 import { ConversationProperties } from '../models/conversation-properties.interface';
 import { ChatService } from './chat.service';
 import { AuthService } from '../auth/services/auth.service';
-import { filter, firstValueFrom, map, switchMap, take } from 'rxjs';
+import { filter, firstValueFrom, last, map, switchMap, take, tap } from 'rxjs';
 import { Conversation } from '../models/conversation.interface';
 import { UserService } from '../services/user.service';
 
@@ -34,6 +34,7 @@ export class ChatComponent implements OnInit {
   ngOnInit() {
     this.authService.user$
       .pipe(
+        tap((user) => console.log(user)),
         filter(
           (user) => user.id !== 0),
         switchMap(
@@ -69,7 +70,7 @@ export class ChatComponent implements OnInit {
           id: conversationProperty.id,
           userName: "",
           lastMessage: "",
-          time: new Date().getHours() + ':' + new Date().getMinutes()
+          time: new Date()
         };
 
         this.userService.getOneById$(conversationProperty.askedUserId)
@@ -79,10 +80,11 @@ export class ChatComponent implements OnInit {
 
         this.chatService.getLastMessageFromConversationId$(conversationProperty.id)
           .subscribe((lastMessage) => {
-            console.log(lastMessage);
+            conversation.time = new Date(lastMessage.timestamp).getHours() + ':' + new Date(lastMessage.timestamp).getMinutes();
             conversation.lastMessage = lastMessage.message;
           });
         conversations.push(conversation);
+        console.log(conversation);
       });
     return conversations;
   }
