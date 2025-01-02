@@ -1,8 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AddConversationDto } from 'src/dtos/add-conversation.dto';
 import { Conversation } from 'src/entities/conversation.entity';
 import { User } from 'src/entities/user.entity';
+import { MessageService } from 'src/message/message.service';
 import { UserService } from 'src/user/user.service';
 import { Repository } from 'typeorm';
 
@@ -11,10 +12,9 @@ export class ConversationService {
     constructor(
         @InjectRepository(Conversation)
         private conversationRepository: Repository<Conversation>,
-        @InjectRepository(User)
-        private userRepository: Repository<User>,
-        
-        private userService: UserService
+        private userService: UserService,
+        @Inject(forwardRef(() => MessageService))
+        private messageService: MessageService
     ) { }
 
     async getAllConversations(): Promise<Conversation[]> {
@@ -79,17 +79,29 @@ export class ConversationService {
                 throw new BadRequestException('Failed to save conversation');
             });
 
-        createrUser.conversationsId.push(newConversation.id);
-        askedUser.conversationsId.push(newConversation.id);
-
-        try {
-            await this.userRepository.save(createrUser);
-            await this.userRepository.save(askedUser);
-        } catch (error) {
-            await this.conversationRepository.delete(newConversation.id);
-            throw new BadRequestException('Failed to save conversation');
-        }
+        await this.userService.addConversationToUser(createrUser.id, newConversation.id);
+        await this.userService.addConversationToUser(askedUser.id, newConversation.id);
 
         return newConversation;
+    }
+
+    async deleteConversation(conversationId: number): Promise<void> {
+        if (!conversationId) {
+            throw new BadRequestException('Conversation id is required');
+        }
+
+        const conversation = await this.getConversationById(conversationId);
+
+        const createrUser = await this.userService.findOneById(conversation.createrUserId);
+        const askedUser = await this.userService.findOneById(conversation.askedUserId);
+
+        await this.userService.deleteConversationById(createrUser.id, conversationId);
+        await this.userService.deleteConversationById(askedUser.id, conversationId);
+
+        const messages = await this.messageService.getAllMessagesFromConversation(conversationId);
+        await Promise.all(
+            messages.map((message) => this.messageService.deleteMessage(message.id))
+        );
+        await this.conversationRepository.delete(conversationId);
     }
 }

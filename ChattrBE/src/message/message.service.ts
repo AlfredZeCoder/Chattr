@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AddMessageDto } from 'src/dtos/add-message.dto';
 import { Message } from 'src/entities/message.entity';
@@ -11,6 +11,7 @@ export class MessageService {
     constructor(
         @InjectRepository(Message)
         private messageRepository: Repository<Message>,
+        @Inject(forwardRef(() => ConversationService))
         private conversationService: ConversationService,
         private userService: UserService
     ) { }
@@ -28,6 +29,24 @@ export class MessageService {
         );
         return messages;
     }
+
+    async getMessageById(messageId: number): Promise<Message> {
+        if (!messageId) {
+            throw new BadRequestException('Message id is required');
+        }
+        const message = await this.messageRepository.findOneBy(
+            {
+                id: messageId
+            }
+        );
+
+        if (!message) {
+            throw new BadRequestException('Message not found');
+        }
+
+        return message;
+    }
+
 
     async getLastMessageFromConversation(conversationId: number): Promise<Message> {
         if (!conversationId) {
@@ -63,5 +82,13 @@ export class MessageService {
         await this.userService.findOneById(message.senderId);
         await this.conversationService.getConversationById(message.conversationId);
         await this.messageRepository.save(message);
+    }
+
+    async deleteMessage(messageId: number): Promise<void> {
+        if (!messageId) {
+            throw new BadRequestException('Message id is required');
+        }
+        const message = await this.getMessageById(messageId);
+        await this.messageRepository.delete(message);
     }
 }

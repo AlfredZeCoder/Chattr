@@ -23,7 +23,7 @@ export class MessageController {
     }
 
     @Post('/add')
-    @UseGuards(IsSelfUserGuard)
+    // @UseGuards(IsSelfUserGuard)
     async addMessage(@Body() message: AddMessageDto, @Headers('Authorization') token: string) {
         return await this.messageService.addMessage(message);
     }
