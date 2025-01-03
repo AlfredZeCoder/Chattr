@@ -16,7 +16,7 @@ export class MessageService {
         private userService: UserService
     ) { }
 
-    async getAllMessagesFromConversation(conversationId: number): Promise<Message[]> {
+    async getAllMessagesFromConversationId(conversationId: number): Promise<Message[]> {
         if (!conversationId) {
             throw new BadRequestException('Conversation id is required');
         }
@@ -27,6 +27,11 @@ export class MessageService {
                 }
             }
         );
+
+        if (!messages) {
+            throw new BadRequestException('Messages not found');
+        }
+
         return messages;
     }
 
@@ -89,6 +94,9 @@ export class MessageService {
             throw new BadRequestException('Message id is required');
         }
         const message = await this.getMessageById(messageId);
-        await this.messageRepository.delete(message);
+        await this.messageRepository.delete(message)
+            .catch((error) => {
+                throw new BadRequestException('Message could not be deleted' + error);
+            });
     }
 }

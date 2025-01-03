@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Message } from '../models/message.interface';
+import { CookieService } from 'ngx-cookie-service';
 
 @Injectable({
   providedIn: 'root'
@@ -8,7 +9,8 @@ import { Message } from '../models/message.interface';
 export class MessageService {
 
   constructor(
-    private httpClient: HttpClient
+    private httpClient: HttpClient,
+    private cookieService: CookieService
   ) { }
 
   getMessagesFromConversation$(conversationId: number) {
@@ -20,7 +22,12 @@ export class MessageService {
   sendMessage$(message: Message) {
     return this.httpClient.post<Message>(
       `http://localhost:3000/message/add`,
-      message
+      message,
+      {
+        headers: {
+          'Authorization': 'Bearer ' + this.cookieService.get('access_token')
+        }
+      }
     );
   }
 }

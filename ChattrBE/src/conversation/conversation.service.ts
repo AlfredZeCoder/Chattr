@@ -98,10 +98,13 @@ export class ConversationService {
         await this.userService.deleteConversationById(createrUser.id, conversationId);
         await this.userService.deleteConversationById(askedUser.id, conversationId);
 
-        const messages = await this.messageService.getAllMessagesFromConversation(conversationId);
+        const messages = await this.messageService.getAllMessagesFromConversationId(conversationId);
         await Promise.all(
             messages.map((message) => this.messageService.deleteMessage(message.id))
         );
-        await this.conversationRepository.delete(conversationId);
+        await this.conversationRepository.delete(conversationId)
+            .catch((error) => {
+                throw new BadRequestException('Failed to delete conversation' + error);
+            });
     }
 }

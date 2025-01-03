@@ -62,9 +62,8 @@ export class UserService {
             throw new BadRequestException('Conversation ID is required');
         }
 
-
-
         const user = await this.findOneById(userId);
+
         if (!user.conversationsId.includes(+conversationId)) {
             throw new UnauthorizedException('User is not part of this conversation');
         }
@@ -76,6 +75,9 @@ export class UserService {
             }
         }
 
-        await this.userRepository.save(user);
+        await this.userRepository.save(user)
+            .catch((error) => {
+                throw new BadRequestException('Failed to delete conversation' + error);
+            });
     }
 }

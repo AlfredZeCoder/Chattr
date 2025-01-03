@@ -23,7 +23,6 @@ export class MessageComponent implements OnInit, AfterViewInit, OnChanges {
   ) { }
 
 
-
   @Input() conversation!: Conversation;
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -85,10 +84,7 @@ export class MessageComponent implements OnInit, AfterViewInit, OnChanges {
     };
     this.messages.push(newMessage);
     this.messageService.sendMessage$(newMessage)
-      .subscribe(
-        (message) => {
-        }
-      );
+      .subscribe();
 
     this.newText = '';
 

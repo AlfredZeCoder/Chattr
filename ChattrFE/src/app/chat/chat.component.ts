@@ -7,10 +7,11 @@ import { MessageComponent } from "../message/message.component";
 import { ConversationProperties } from '../models/conversation-properties.interface';
 import { ChatService } from './chat.service';
 import { AuthService } from '../auth/services/auth.service';
-import { filter, firstValueFrom, last, map, switchMap, take, tap } from 'rxjs';
+import { filter, firstValueFrom, last, map, Observable, switchMap, take, tap } from 'rxjs';
 import { Conversation } from '../models/conversation.interface';
 import { UserService } from '../services/user.service';
 import { Message } from '../models/message.interface';
+import { User } from '../models/user.interface';
 
 @Component({
   selector: 'app-chat',
@@ -33,7 +34,30 @@ export class ChatComponent implements OnInit {
   ) { }
 
   async ngOnInit() {
-    this.authService.user$
+    this.getAllConversationProperties$()
+      .subscribe({
+        next: async (conversationProperties) => {
+          this.conversationsProperties = conversationProperties;
+          await this.assignConversations();
+        },
+        error: (error) => {
+          console.error(error);
+        }
+      });
+
+  }
+
+  searchValue: string = '';
+  hasClickedConversation: boolean = false;
+  clickedConversationId!: number;
+  inputConversation!: Conversation;
+
+  conversationsProperties: ConversationProperties[] = [];
+
+  conversations: Conversation[] = [];
+
+  getAllConversationProperties$() {
+    return this.authService.user$
       .pipe(
         filter(
           (user) => user.id !== 0),
@@ -41,22 +65,13 @@ export class ChatComponent implements OnInit {
           (user) =>
             this.chatService.getAllConversationPropertiesFromUserId$(user.id)
         ),
-      )
-      .subscribe(async (conversationProperties) => {
-        this.conversationsProperties = conversationProperties;
-        this.conversations = (await this.aggregateConversations())
-          .sort((a, b) => b.time.localeCompare(a.time));
-      });
+      );
   }
 
-  searchValue: string = '';
-  hasClickedConversation: boolean = false;
-  clickedConversationId: number = 0;
-  inputConversation!: Conversation;
-
-  conversationsProperties: ConversationProperties[] = [];
-
-  conversations: Conversation[] = [];
+  async assignConversations() {
+    this.conversations = (await this.aggregateConversations())
+      .sort((a, b) => b.time.localeCompare(a.time));
+  }
 
   async aggregateConversations() {
     const conversations: Conversation[] = [];
@@ -64,34 +79,45 @@ export class ChatComponent implements OnInit {
     await Promise.all(
       this.conversationsProperties
         .map(async (conversationProperty) => {
+
           const conversation: Conversation = {
             id: conversationProperty.id,
             userName: "",
             lastMessage: "",
-            time: new Date().getHours() + ':' + String(new Date().getMinutes()).padStart(2, '0')
+            time: ""
           };
 
-          const user = await firstValueFrom(
+          const askedUser = await this.getFirstValueFrom<User>(
             this.userService.getOneById$(conversationProperty.askedUserId)
           );
-          conversation.userName = `${user.firstName} ${user.lastName}`;
 
-          const lastMessage = await firstValueFrom(
+          conversation.userName = `${askedUser.firstName} ${askedUser.lastName}`;
+
+          const lastMessage = await this.getFirstValueFrom<Message>(
             this.chatService.getLastMessageFromConversationId$(conversationProperty.id)
           );
 
-          conversation.time = lastMessage ? `${String(new Date(lastMessage.timestamp).getHours()).padStart(2, '0')}:
-          ${String(new Date(lastMessage.timestamp).getMinutes()).padStart(2, '0')}`
-            : "";
+          conversation.time = lastMessage ? this.getConversationTime(lastMessage.timestamp) : "";
+
           if (lastMessage) {
             conversation.lastMessage = lastMessage.message;
           } else {
             conversation.lastMessage = "";
           }
+
           conversations.push(conversation);
+
         })
     );
     return conversations;
+  }
+
+  getConversationTime(timestamp: Date) {
+    return `${String(new Date(timestamp).getHours()).padStart(2, '0')}:${String(new Date(timestamp).getMinutes()).padStart(2, '0')}`;
+  }
+
+  async getFirstValueFrom<T>(observable: Observable<T>) {
+    return await firstValueFrom(observable);
   }
 
   getConversation(conversation: Conversation) {
