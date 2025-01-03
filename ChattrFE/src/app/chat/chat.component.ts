@@ -10,9 +10,10 @@ import { AuthService } from '../auth/services/auth.service';
 import { filter, firstValueFrom, last, map, switchMap, take, tap } from 'rxjs';
 import { Conversation } from '../models/conversation.interface';
 import { UserService } from '../services/user.service';
+import { Message } from '../models/message.interface';
 
 @Component({
-  selector: 'app-text',
+  selector: 'app-chat',
   imports: [
     TruncatePipe,
     FormsModule,
@@ -31,10 +32,9 @@ export class ChatComponent implements OnInit {
     private userService: UserService
   ) { }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.authService.user$
       .pipe(
-        tap((user) => console.log(user)),
         filter(
           (user) => user.id !== 0),
         switchMap(
@@ -42,241 +42,66 @@ export class ChatComponent implements OnInit {
             this.chatService.getAllConversationPropertiesFromUserId$(user.id)
         ),
       )
-      .subscribe((conversationProperties) => {
+      .subscribe(async (conversationProperties) => {
         this.conversationsProperties = conversationProperties;
-        this.conversations = this.aggregateConversations();
-        this.conversations.map((conversation) => console.log(conversation));
-        console.log(this.conversationsProperties);
+        this.conversations = (await this.aggregateConversations())
+          .sort((a, b) => b.time.localeCompare(a.time));
       });
-
-    // console.log(this.aggregateConversations());
   }
 
   searchValue: string = '';
   hasClickedConversation: boolean = false;
   clickedConversationId: number = 0;
-  inputConversation: any;
+  inputConversation!: Conversation;
 
   conversationsProperties: ConversationProperties[] = [];
 
   conversations: Conversation[] = [];
 
-  aggregateConversations() {
+  async aggregateConversations() {
     const conversations: Conversation[] = [];
 
-    this.conversationsProperties
-      .map((conversationProperty) => {
-        const conversation: Conversation = {
-          id: conversationProperty.id,
-          userName: "",
-          lastMessage: "",
-          time: new Date()
-        };
+    await Promise.all(
+      this.conversationsProperties
+        .map(async (conversationProperty) => {
+          const conversation: Conversation = {
+            id: conversationProperty.id,
+            userName: "",
+            lastMessage: "",
+            time: new Date().getHours() + ':' + String(new Date().getMinutes()).padStart(2, '0')
+          };
 
-        this.userService.getOneById$(conversationProperty.askedUserId)
-          .subscribe((user) => {
-            conversation.userName = user.firstName + ' ' + user.lastName;
-          });
+          const user = await firstValueFrom(
+            this.userService.getOneById$(conversationProperty.askedUserId)
+          );
+          conversation.userName = `${user.firstName} ${user.lastName}`;
 
-        this.chatService.getLastMessageFromConversationId$(conversationProperty.id)
-          .subscribe((lastMessage) => {
-            conversation.time = new Date(lastMessage.timestamp).getHours() + ':' + new Date(lastMessage.timestamp).getMinutes();
+          const lastMessage = await firstValueFrom(
+            this.chatService.getLastMessageFromConversationId$(conversationProperty.id)
+          );
+
+          conversation.time = lastMessage ? `${String(new Date(lastMessage.timestamp).getHours()).padStart(2, '0')}:
+          ${String(new Date(lastMessage.timestamp).getMinutes()).padStart(2, '0')}`
+            : "";
+          if (lastMessage) {
             conversation.lastMessage = lastMessage.message;
-          });
-        conversations.push(conversation);
-        console.log(conversation);
-      });
+          } else {
+            conversation.lastMessage = "";
+          }
+          conversations.push(conversation);
+        })
+    );
     return conversations;
   }
-  mockConversations = [
-    {
-      id: 1,
-      name: 'Jean-Francois Poirier',
-      lastMessage: 'Hello, how are you? adslkfjhasdlkfjhasldkfjhasdlkfjhasdlkfjhasdlkfjhasdlkfjahsdlfkjh',
-      time: '10:54'
-    },
-    {
-      id: 2,
-      name: 'Jane Doe',
-      lastMessage: 'I am good, how about you?',
-      time: '10:25'
-    },
-    {
-      id: 3,
-      name: 'John Doe',
-      lastMessage: 'I am good too',
-      time: '10:54'
-    },
-    {
-      id: 4,
-      name: 'Alfred Poirier',
-      lastMessage: 'That is good to hear',
-      time: '10:25'
-    },
-    {
-      id: 5,
-      name: 'John Doe',
-      lastMessage: 'Hello, how are you?',
-      time: '10:54'
-    },
-    {
-      id: 6,
-      name: 'Jane Doe',
-      lastMessage: 'I am good, how about you?',
-      time: '10:25'
-    },
-    {
-      id: 7,
-      name: 'John Doe',
-      lastMessage: 'I am good too',
-      time: '10:54'
-    },
-    {
-      id: 8,
-      name: 'Jane Doe',
-      lastMessage: 'That is good to hear',
-      time: '10:25'
-    },
-    {
-      id: 9,
-      name: 'John Doe',
-      lastMessage: 'Hello, how are you?',
-      time: '10:54'
-    },
-    {
-      id: 10,
-      name: 'Jane Doe',
-      lastMessage: 'I am good, how about you?',
-      time: '10:25'
-    },
-    {
-      id: 11,
-      name: 'John Doe',
-      lastMessage: 'I am good too',
-      time: '10:54'
-    },
-    {
-      id: 12,
-      name: 'Jane Doe',
-      lastMessage: 'That is good to hear',
-      time: '10:25'
-    },
-    {
-      id: 13,
-      name: 'John Doe',
-      lastMessage: 'Hello, how are you?',
-      time: '10:54'
-    },
-    {
-      id: 14,
-      name: 'Jane Doe',
-      lastMessage: 'I am good, how about you?',
-      time: '10:25'
-    },
-    {
-      id: 15,
-      name: 'John Doe',
-      lastMessage: 'I am good too',
-      time: '10:54'
-    },
-    {
-      id: 16,
-      name: 'Jane Doe',
-      lastMessage: 'That is good to hear',
-      time: '10:25'
-    },
-    {
-      id: 17,
-      name: 'John Doe',
-      lastMessage: 'Hello, how are you?',
-      time: '10:54'
-    },
-    {
-      id: 18,
-      name: 'Jane Doe',
-      lastMessage: 'I am good, how about you?',
-      time: '10:25'
-    },
-    {
-      id: 19,
-      name: 'John Doe',
-      lastMessage: 'I am good too',
-      time: '10:54'
-    },
-    {
-      id: 20,
-      name: 'Jane Doe',
-      lastMessage: 'That is good to hear',
-      time: '10:25'
-    },
-    {
-      id: 21,
-      name: 'John Doe',
-      lastMessage: 'Hello, how are you?',
-      time: '10:54'
-    },
-    {
-      id: 22,
-      name: 'Jane Doe',
-      lastMessage: 'I am good, how about you?',
-      time: '10:25'
-    },
-    {
-      id: 23,
-      name: 'John Doe',
-      lastMessage: 'I am good too',
-      time: '10:54'
-    },
-    {
-      id: 24,
-      name: 'Jane Doe',
-      lastMessage: 'That is good to hear',
-      time: '10:25'
-    },
-    {
-      id: 25,
-      name: 'John Doe',
-      lastMessage: 'Hello, how are you?',
-      time: '10:54'
-    },
-    {
-      id: 26,
-      name: 'Jane Doe',
-      lastMessage: 'I am good, how about you?',
-      time: '10:25'
-    },
-    {
-      id: 27,
-      name: 'John Doe',
-      lastMessage: 'I am good too',
-      time: '10:54'
-    },
-    {
-      id: 28,
-      name: 'Jane Doe',
-      lastMessage: 'That is good to hear',
-      time: '10:25'
-    },
-    {
-      id: 29,
-      name: 'John Doe',
-      lastMessage: 'Hello, how are you?',
-      time: '10:54'
-    },
-    {
-      id: 30,
-      name: 'Jane Doe',
-      lastMessage: 'I am good, how about you?',
-      time: '10:25'
-    }
-  ];
 
-  getConversation(conversation: any) {
+  getConversation(conversation: Conversation) {
     this.inputConversation = conversation;
     this.clickedConversationId = conversation.id;
     this.hasClickedConversation = true;
     this.router.navigate(['/chat/conversation']);
   }
+
+
 
 
 

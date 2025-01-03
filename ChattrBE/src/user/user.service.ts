@@ -76,7 +76,6 @@ export class UserService {
             }
         }
 
-        console.log(user.conversationsId);
         await this.userRepository.save(user);
     }
 }

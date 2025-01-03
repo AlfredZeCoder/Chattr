@@ -17,8 +17,6 @@ export class MessageController {
 
     @Get('/last/:conversationId')
     async findLastByConversationId(@Param('conversationId') conversationId: number) {
-        console.log(conversationId);
-        console.log(await this.messageService.getLastMessageFromConversation(conversationId));
         return await this.messageService.getLastMessageFromConversation(conversationId);
     }
 
