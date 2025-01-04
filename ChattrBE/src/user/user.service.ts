@@ -3,15 +3,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import { HashingService } from 'src/auth/hashing.service';
 import { Repository } from 'typeorm';
-import { ConversationService } from 'src/conversation/conversation.service';
 
 @Injectable()
 export class UserService {
     constructor(
         @InjectRepository(User)
         private userRepository: Repository<User>,
-        private hashService: HashingService,
-        private conversationService: ConversationService
+        private hashService: HashingService
     ) { }
 
     findAll = async (): Promise<User[]> => {
