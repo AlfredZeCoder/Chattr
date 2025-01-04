@@ -122,9 +122,6 @@ export class ChatComponent implements OnInit {
     return conversations;
   }
 
-  getConversationTime(timestamp: Date) {
-  }
-
   async getFirstValueFrom<T>(observable: Observable<T>) {
     return await firstValueFrom(observable);
   }
@@ -135,9 +132,5 @@ export class ChatComponent implements OnInit {
     this.hasClickedConversation = true;
     this.router.navigate(['/chat/conversation']);
   }
-
-
-
-
-
 }
+
