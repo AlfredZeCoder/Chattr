@@ -105,6 +105,10 @@ export class ChatComponent implements OnInit {
             this.userService.getOneById$(conversationProperty.askedUserId)
           );
 
+          if (askedUser.id == this.authService.user$.getValue().id) {
+            return;
+          }
+
           conversation.userName = `${askedUser.firstName} ${askedUser.lastName}`;
 
           const lastMessage = await this.getFirstValueFrom<Message>(
@@ -131,7 +135,6 @@ export class ChatComponent implements OnInit {
           }
 
           conversations.push(conversation);
-          console.log(conversations);
         })
 
     );
