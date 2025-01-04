@@ -2,7 +2,8 @@
     <div class="chat-container" #chatContainer>
         @for (message of messages; track message.id) {
         @if (message.senderId !== userId) {
-        <div class="text" [ngStyle]="{'background-color': 'rgb(228, 228, 228)', 'align-self': 'flex-start'}">
+        <div class="text"
+            [ngStyle]="{'background-color': 'rgb(73, 73, 73)', 'color' : 'var(--dark-white)', 'align-self': 'flex-start'}">
             {{ message.message }}
         </div>
         } @else {

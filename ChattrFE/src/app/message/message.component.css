@@ -34,7 +34,7 @@
     align-items: center;
     position: relative;
     height: 7%;
-    border-top: 1px solid rgb(226, 226, 226);
+    border-top: 1px solid rgb(70, 70, 70);
 }
 
 .send-message-container form {
@@ -43,6 +43,7 @@
     align-items: center;
     gap: 10px;
     width: 100%;
+    color: rgb(0, 113, 219);
 }
 
 .send-message-container input {
@@ -53,7 +54,8 @@
     padding: 10px;
     font-size: 15px;
     outline: none;
-    border: 1px solid #dcecf3;
+    background-color: var(--dark-white);
+    border: none;
 }
 
 

@@ -8,7 +8,6 @@ import { switchMap, tap } from 'rxjs';
   selector: 'app-root',
   imports: [
     RouterOutlet,
-    RouterLink
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
@@ -45,5 +44,12 @@ export class AppComponent {
           }
         });
     }
+  }
+
+  reload() {
+    this.router.navigate(['/chat'])
+      .then(() => {
+        window.location.reload();
+      });
   }
 }
