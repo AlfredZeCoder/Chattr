@@ -21,4 +21,12 @@ export class Message {
         }
     )
     timestamp: Date;
+
+    @Column('boolean',
+        {
+            nullable: false,
+            default: false
+        }
+    )
+    isRead: boolean;
 }

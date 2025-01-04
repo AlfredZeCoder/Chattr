@@ -3,4 +3,5 @@ export interface Conversation {
     userName: string;
     lastMessage: string;
     timestamp: Date;
+    lastMessageIsRead: boolean;
 }

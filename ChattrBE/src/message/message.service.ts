@@ -99,4 +99,16 @@ export class MessageService {
                 throw new BadRequestException('Message could not be deleted' + error);
             });
     }
+
+    async changeMessageReadStatus(messageId: number): Promise<void> {
+        if (!messageId) {
+            throw new BadRequestException('Message id is required');
+        }
+        const message = await this.getMessageById(messageId);
+        message.isRead = true;
+        await this.messageRepository.save(message)
+            .catch((error) => {
+                throw new BadRequestException('Message could not be updated' + error);
+            });
+    }
 }

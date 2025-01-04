@@ -12,6 +12,7 @@ import { Conversation } from '../models/conversation.interface';
 import { UserService } from '../services/user.service';
 import { Message } from '../models/message.interface';
 import { User } from '../models/user.interface';
+import { MessageService } from '../message/message.service';
 
 @Component({
   selector: 'app-chat',
@@ -32,6 +33,7 @@ export class ChatComponent implements OnInit {
     private chatService: ChatService,
     private authService: AuthService,
     private userService: UserService,
+    private messageService: MessageService
   ) { }
 
   ngOnInit() {
@@ -55,6 +57,7 @@ export class ChatComponent implements OnInit {
   conversationsProperties: ConversationProperties[] = [];
   yesterday = new Date(new Date().setDate(new Date().getDate() - 1));
   conversations: Conversation[] = [];
+
 
   isYesterday(timestamp: Date) {
     const yesterdayStart = new Date(this.yesterday.setHours(0, 0, 0, 0));
@@ -94,7 +97,8 @@ export class ChatComponent implements OnInit {
             id: conversationProperty.id,
             userName: "",
             lastMessage: "",
-            timestamp: new Date()
+            timestamp: new Date(),
+            lastMessageIsRead: false
           };
 
           const askedUser = await this.getFirstValueFrom<User>(
@@ -104,7 +108,7 @@ export class ChatComponent implements OnInit {
           conversation.userName = `${askedUser.firstName} ${askedUser.lastName}`;
 
           const lastMessage = await this.getFirstValueFrom<Message>(
-            this.chatService.getLastMessageFromConversationId$(conversationProperty.id)
+            this.messageService.getLastMessageFromConversationId$(conversationProperty.id)
           );
 
           conversation.timestamp = lastMessage.timestamp;
@@ -115,6 +119,12 @@ export class ChatComponent implements OnInit {
             conversation.lastMessage = "";
           }
 
+          if (lastMessage.senderId == this.authService.user$.getValue().id) {
+            conversation.lastMessageIsRead = true;
+          } else {
+            conversation.lastMessageIsRead = lastMessage.isRead;
+          }
+
           conversations.push(conversation);
 
         })
@@ -122,11 +132,30 @@ export class ChatComponent implements OnInit {
     return conversations;
   }
 
+  changeLastMessageColor(conversation: Conversation) {
+    if (!conversation.lastMessageIsRead &&
+      !(conversation.id == this.clickedConversationId && this.hasClickedConversation)) {
+      return {
+        'color': 'rgb(0, 0, 0)',
+        'font-weight': 'bold'
+      };
+    }
+    if (conversation.id == this.clickedConversationId && this.hasClickedConversation) {
+      return {
+        'color': 'rgb(189, 195, 196)'
+      };
+    }
+    return null;
+  }
+
   async getFirstValueFrom<T>(observable: Observable<T>) {
     return await firstValueFrom(observable);
   }
 
   getConversation(conversation: Conversation) {
+    //Not affecting backend
+    conversation.lastMessageIsRead = true;
+
     this.inputConversation = conversation;
     this.clickedConversationId = conversation.id;
     this.hasClickedConversation = true;

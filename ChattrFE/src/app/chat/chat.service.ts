@@ -19,10 +19,6 @@ export class ChatService {
     );
   }
 
-  getLastMessageFromConversationId$(conversationId: number) {
-    return this.httpClient.get<Message>(
-      SERVER_URL + '/message/last/' + conversationId
-    );
-  }
+
 }
 

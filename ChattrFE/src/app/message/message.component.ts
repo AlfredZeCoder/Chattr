@@ -13,7 +13,7 @@ import { AuthService } from '../auth/services/auth.service';
     FormsModule,
   ],
   templateUrl: './message.component.html',
-  styleUrl: './message.component.css'
+  styleUrl: './message.component.css',
 })
 export class MessageComponent implements OnInit, AfterViewInit, OnChanges {
 
@@ -39,6 +39,7 @@ export class MessageComponent implements OnInit, AfterViewInit, OnChanges {
         }
       );
     this.getMessagesFromConversation(this.conversation.id);
+
   }
 
   getMessagesFromConversation(conversationId: number) {
@@ -46,8 +47,14 @@ export class MessageComponent implements OnInit, AfterViewInit, OnChanges {
       .subscribe(
         (messages) => {
           this.messages = messages;
+          this.messages.forEach((message) => {
+            if (message.senderId !== this.authService.user$.getValue().id && !message.isRead) {
+              this.changeReadStatus(message);
+            }
+          });
         }
       );
+
   }
 
   ngAfterViewInit(): void {
@@ -56,6 +63,12 @@ export class MessageComponent implements OnInit, AfterViewInit, OnChanges {
 
   @ViewChild('chatContainer')
   chatContainer?: ElementRef;
+
+  changeReadStatus(message: Message) {
+    this.messageService.changeMessageReadStatus$(message.id)
+      .subscribe();
+    message.isRead = true;
+  }
 
   newText: string = '';
   userId!: number;
@@ -80,7 +93,8 @@ export class MessageComponent implements OnInit, AfterViewInit, OnChanges {
       conversationId: this.conversation!.id,
       message: message,
       senderId: this.userId,
-      timestamp: new Date()
+      timestamp: new Date(),
+      isRead: false
     };
     this.messages.push(newMessage);
     this.messageService.sendMessage$(newMessage)

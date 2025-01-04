@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, UseGuards, Headers } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards, Headers, Put } from '@nestjs/common';
 import { MessageService } from './message.service';
 import { AddMessageDto } from 'src/dtos/add-message.dto';
 import { IsSelfUserGuard } from 'src/auth/guards/isselfuser.guard';
@@ -21,7 +21,13 @@ export class MessageController {
 
     @Post('/add')
     @UseGuards(IsSelfUserGuard)
-    async addMessage(@Body() message: AddMessageDto, @Headers('Authorization') token: string) {
+    async addMessage(@Body() message: AddMessageDto) {
         return await this.messageService.addMessage(message);
     }
+
+    @Put('/update-read-status/:messageId')
+    async changeMessageReadStatus(@Param('messageId') messageId: number) {
+        return await this.messageService.changeMessageReadStatus(messageId);
+    }
+
 }
