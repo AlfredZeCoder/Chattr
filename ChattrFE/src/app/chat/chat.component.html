@@ -8,7 +8,7 @@
                 @for (conversation of conversations; track conversation) {
                 @if (conversation.userName.toLowerCase().startsWith(searchValue.toLowerCase())) {
                 <div class="conversation" (click)="getConversation(conversation)"
-                    [ngStyle]="{ 'background-color': hasClickedConversation && conversation.id == clickedConversationId ? '#636b77' : null }">
+                    [ngStyle]="{ 'background-color': hasClickedConversation && conversation.id == clickedConversationId ? 'var(--soft-black)' : null }">
                     <div class="name-and-time">
                         <div class="name"
                             [ngStyle]="{ 'color': hasClickedConversation && conversation.id == clickedConversationId ? 'rgb(218, 220, 224)' : null }">

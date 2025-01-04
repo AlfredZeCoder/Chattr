@@ -17,6 +17,7 @@
     padding: 20px;
     border: var(--soft-gray-background);
     border-radius: 10px;
+    background-color: var(--alt-black);
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -26,6 +27,7 @@
     align-items: center;
     gap: 10px;
     cursor: pointer;
+    color: var(--dark-white);
 }
 
 .back svg {
@@ -41,10 +43,11 @@
 
 .title h3 {
     margin-top: 10px;
+    color: var(--dark-white);
 }
 
 .title h5 {
-    color: red;
+    color: rgb(175, 57, 57);
 }
 
 .main .form {
@@ -60,11 +63,13 @@
     border: var(--soft-gray-background);
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     outline: none;
+    background-color: var(--dark-white);
     transition: box-shadow .3s;
 }
 
 .form input::placeholder {
     font-size: 15px;
+    color: var(--alt-black);
 }
 
 .form input:hover {

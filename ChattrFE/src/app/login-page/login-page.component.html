@@ -8,10 +8,10 @@
         </div>
         <form [formGroup]="loginInForm" class="form">
             <input formControlName="email" class="email" type="text" placeholder="Email"
-                [ngStyle]="{'box-shadow': (emailIsInvalid$ | async) ? '0 0 10px rgb(255, 175, 175)' : null}"
+                [ngStyle]="{'box-shadow': (emailIsInvalid$ | async) ? '0 0 10px rgb(255, 80, 80)' : null}"
                 (keyup)="onKeyUp('email')">
             <input formControlName="password" class="password" type="password" placeholder="Password"
-                [ngStyle]="{'box-shadow': (passwordIsInvalid$ | async) ? '0 0 10px rgb(255, 175, 175)' : null}"
+                [ngStyle]="{'box-shadow': (passwordIsInvalid$ | async) ? '0 0 10px rgb(255, 80, 80)' : null}"
                 (keyup)="onKeyUp('password')">
             <button [disabled]="isLoading$ | async" (click)="submitForm()" type=" submit" class="login"
                 [ngStyle]="{'cursor': (isLoading$ | async) ? 'not-allowed' : null, 'background-color': (isLoading$ | async) ? '#414750' : null}">

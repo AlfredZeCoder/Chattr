@@ -150,7 +150,7 @@ export class ChatComponent implements OnInit {
     if (!conversation.lastMessageIsRead &&
       !(conversation.id == this.clickedConversationId && this.hasClickedConversation)) {
       return {
-        'color': 'rgb(0, 0, 0)',
+        'color': 'var(--dark-white)',
         'font-weight': 'bold'
       };
     }

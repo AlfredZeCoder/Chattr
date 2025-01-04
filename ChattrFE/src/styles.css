@@ -15,6 +15,10 @@
     --soft-blue: rgb(68, 185, 214);
     --gray-alt: #2A2E33;
     --gray-alt-darker: rgb(34, 39, 43);
+    --main-black: #121212;
+    --alt-black: #282828;
+    --dark-white: #dbdbdb;
+    --soft-black: #575757;
 }
 
 @font-face {
@@ -52,6 +56,7 @@ body {
 
 .full-height {
     height: 100%;
+
 }
 
 html {
