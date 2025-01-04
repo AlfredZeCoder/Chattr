@@ -2,5 +2,5 @@ export interface Conversation {
     id: number;
     userName: string;
     lastMessage: string;
-    time: string;
+    timestamp: Date;
 }

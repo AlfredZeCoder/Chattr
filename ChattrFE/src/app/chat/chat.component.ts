@@ -1,7 +1,7 @@
 import { Component, Injectable, OnInit } from '@angular/core';
 import { TruncatePipe } from '../pipes/truncate.pipe';
 import { FormsModule } from '@angular/forms';
-import { NgStyle } from '@angular/common';
+import { DatePipe, NgStyle } from '@angular/common';
 import { Router } from '@angular/router';
 import { MessageComponent } from "../message/message.component";
 import { ConversationProperties } from '../models/conversation-properties.interface';
@@ -19,7 +19,8 @@ import { User } from '../models/user.interface';
     TruncatePipe,
     FormsModule,
     NgStyle,
-    MessageComponent
+    MessageComponent,
+    DatePipe
   ],
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.css'
@@ -30,10 +31,10 @@ export class ChatComponent implements OnInit {
     private router: Router,
     private chatService: ChatService,
     private authService: AuthService,
-    private userService: UserService
+    private userService: UserService,
   ) { }
 
-  async ngOnInit() {
+  ngOnInit() {
     this.getAllConversationProperties$()
       .subscribe({
         next: async (conversationProperties) => {
@@ -51,10 +52,17 @@ export class ChatComponent implements OnInit {
   hasClickedConversation: boolean = false;
   clickedConversationId!: number;
   inputConversation!: Conversation;
-
   conversationsProperties: ConversationProperties[] = [];
-
+  yesterday = new Date(new Date().setDate(new Date().getDate() - 1));
   conversations: Conversation[] = [];
+
+  isYesterday(timestamp: Date) {
+    const yesterdayStart = new Date(this.yesterday.setHours(0, 0, 0, 0));
+    const yesterdayEnd = new Date(this.yesterday.setHours(23, 59, 59, 999));
+    const conversationTime = new Date(timestamp).getTime();
+
+    return conversationTime >= yesterdayStart.getTime() && conversationTime <= yesterdayEnd.getTime();
+  }
 
   getAllConversationProperties$() {
     return this.authService.user$
@@ -70,7 +78,9 @@ export class ChatComponent implements OnInit {
 
   async assignConversations() {
     this.conversations = (await this.aggregateConversations())
-      .sort((a, b) => b.time.localeCompare(a.time));
+      .sort((a, b) => {
+        return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
+      });
   }
 
   async aggregateConversations() {
@@ -84,7 +94,7 @@ export class ChatComponent implements OnInit {
             id: conversationProperty.id,
             userName: "",
             lastMessage: "",
-            time: ""
+            timestamp: new Date()
           };
 
           const askedUser = await this.getFirstValueFrom<User>(
@@ -97,7 +107,7 @@ export class ChatComponent implements OnInit {
             this.chatService.getLastMessageFromConversationId$(conversationProperty.id)
           );
 
-          conversation.time = lastMessage ? this.getConversationTime(lastMessage.timestamp) : "";
+          conversation.timestamp = lastMessage.timestamp;
 
           if (lastMessage) {
             conversation.lastMessage = lastMessage.message;
@@ -113,7 +123,6 @@ export class ChatComponent implements OnInit {
   }
 
   getConversationTime(timestamp: Date) {
-    return `${String(new Date(timestamp).getHours()).padStart(2, '0')}:${String(new Date(timestamp).getMinutes()).padStart(2, '0')}`;
   }
 
   async getFirstValueFrom<T>(observable: Observable<T>) {

@@ -16,7 +16,13 @@
                         </div>
                         <div class="time"
                             [ngStyle]="{ 'color': hasClickedConversation && conversation.id == clickedConversationId ? 'rgb(218, 220, 224)' : null }">
-                            {{ conversation.time }}
+                            @if (!isYesterday(conversation.timestamp)) {
+                            {{ conversation.timestamp | date: 'shortTime' }}
+                            } @else if (isYesterday(conversation.timestamp)) {
+                            Yesterday
+                            } @else {
+                            {{ conversation.timestamp | date: 'shortDate' }}
+                            }
                         </div>
                     </div>
                     <div class="last-message"
