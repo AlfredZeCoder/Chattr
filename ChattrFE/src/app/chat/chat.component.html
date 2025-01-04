@@ -26,7 +26,7 @@
                         </div>
                     </div>
                     <div class="last-message" [ngStyle]="changeLastMessageColor(conversation)">
-                        @if (!conversation.lastMessageIsRead){
+                        @if (!conversation.lastMessageIsRead && conversation.lastMessage){
                         <div class="unread-dot"></div>
                         }
                         {{ conversation.lastMessage | truncate: 25 }}

@@ -111,23 +111,29 @@ export class ChatComponent implements OnInit {
             this.messageService.getLastMessageFromConversationId$(conversationProperty.id)
           );
 
-          conversation.timestamp = lastMessage.timestamp;
-
           if (lastMessage) {
-            conversation.lastMessage = lastMessage.message;
-          } else {
-            conversation.lastMessage = "";
-          }
+            if (lastMessage.timestamp) {
+              conversation.timestamp = lastMessage.timestamp;
+            }
 
-          if (lastMessage.senderId == this.authService.user$.getValue().id) {
-            conversation.lastMessageIsRead = true;
-          } else {
-            conversation.lastMessageIsRead = lastMessage.isRead;
+            if (lastMessage) {
+              conversation.lastMessage = lastMessage.message;
+            } else {
+              conversation.lastMessage = "";
+            }
+
+            if (lastMessage.senderId == this.authService.user$.getValue().id) {
+              conversation.lastMessageIsRead = true;
+            } else {
+              conversation.lastMessageIsRead = lastMessage.isRead;
+            }
+
           }
 
           conversations.push(conversation);
-
+          console.log(conversations);
         })
+
     );
     return conversations;
   }

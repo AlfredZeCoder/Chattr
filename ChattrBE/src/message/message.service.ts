@@ -20,6 +20,9 @@ export class MessageService {
         if (!conversationId) {
             throw new BadRequestException('Conversation id is required');
         }
+
+        await this.conversationService.getConversationById(conversationId);
+
         const messages = await this.messageRepository.find(
             {
                 where: {
@@ -57,6 +60,9 @@ export class MessageService {
         if (!conversationId) {
             throw new BadRequestException('Conversation id is required');
         }
+
+        await this.conversationService.getConversationById(conversationId);
+
         const message = await this.messageRepository.findOne(
             {
                 where: {
