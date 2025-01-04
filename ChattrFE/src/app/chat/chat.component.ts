@@ -1,4 +1,4 @@
-import { Component, Injectable, OnInit } from '@angular/core';
+import { Component, inject, Injectable, OnInit } from '@angular/core';
 import { TruncatePipe } from '../pipes/truncate.pipe';
 import { FormsModule } from '@angular/forms';
 import { DatePipe, NgStyle } from '@angular/common';
@@ -13,6 +13,9 @@ import { UserService } from '../services/user.service';
 import { Message } from '../models/message.interface';
 import { User } from '../models/user.interface';
 import { MessageService } from '../message/message.service';
+import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
+import { DomSanitizer } from '@angular/platform-browser';
+import { iconSVG } from '../utils/iconSVG';
 
 @Component({
   selector: 'app-chat',
@@ -21,7 +24,8 @@ import { MessageService } from '../message/message.service';
     FormsModule,
     NgStyle,
     MessageComponent,
-    DatePipe
+    DatePipe,
+    MatIconModule
   ],
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.css'
@@ -34,7 +38,12 @@ export class ChatComponent implements OnInit {
     private authService: AuthService,
     private userService: UserService,
     private messageService: MessageService
-  ) { }
+  ) {
+    const iconRegistry = inject(MatIconRegistry);
+    const sanitizer = inject(DomSanitizer);
+
+    iconRegistry.addSvgIconLiteral('new-message', sanitizer.bypassSecurityTrustHtml(iconSVG.newMessage));
+  }
 
   ngOnInit() {
     this.getAllConversationProperties$()

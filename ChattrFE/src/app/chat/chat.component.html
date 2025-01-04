@@ -1,8 +1,11 @@
 <div class="container">
     <div class="chat-container">
         <div class="conversations-container">
-            <div class="search-bar">
-                <input [(ngModel)]="searchValue" type="text" class="search" placeholder="Search" />
+            <div class="search-bar-container">
+                <div class="search-bar">
+                    <input [(ngModel)]="searchValue" type="text" class="search" placeholder="Search" />
+                    <mat-icon class="new-message" svgIcon="new-message"></mat-icon>
+                </div>
             </div>
             <div class="conversations">
                 @for (conversation of conversations; track conversation) {

@@ -1,17 +1,19 @@
 import { NgStyle } from '@angular/common';
-import { AfterViewInit, Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, inject, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Conversation } from '../models/conversation.interface';
 import { Message } from '../models/message.interface';
 import { MessageService } from './message.service';
 import { AuthService } from '../auth/services/auth.service';
-import { filter } from 'rxjs';
-
+import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
+import { DomSanitizer } from '@angular/platform-browser';
+import { iconSVG } from '../utils/iconSVG';
 @Component({
   selector: 'app-message',
   imports: [
     NgStyle,
     FormsModule,
+    MatIconModule
   ],
   templateUrl: './message.component.html',
   styleUrl: './message.component.css',
@@ -21,7 +23,12 @@ export class MessageComponent implements OnInit, AfterViewInit, OnChanges {
   constructor(
     private messageService: MessageService,
     private authService: AuthService,
-  ) { }
+  ) {
+    const iconRegistry = inject(MatIconRegistry);
+    const sanitizer = inject(DomSanitizer);
+
+    iconRegistry.addSvgIconLiteral('arrow-up', sanitizer.bypassSecurityTrustHtml(iconSVG.arrowUp));
+  }
 
 
   @Input() conversation!: Conversation;
