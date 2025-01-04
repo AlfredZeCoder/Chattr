@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, Headers, Param } from '@nestjs/common';
+import { Controller, Get, UseGuards, Headers, Param, Post, Put, Query } from '@nestjs/common';
 import { UserService } from './user.service';
 import { GetUserDto } from 'src/dtos/get-user.dto';
 import { RoleGuard } from 'src/auth/guards/role.guard';
@@ -43,5 +43,11 @@ export class UserController {
     async findOneByIdFromParam(@Param('id') id: number) {
         const user = await this.userService.findOneById(id);
         return GetUserDto.toDto(user);
+    }
+
+    @Public()
+    @Put('add-conversation-request/:userId/:askingUserId')
+    async addPendingRequest(@Param ('userId') userId: number, @Param('askingUserId') askingUserId: number) {
+        return await this.userService.addPendingRequest(userId, askingUserId);
     }
 }

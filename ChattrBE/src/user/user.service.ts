@@ -3,13 +3,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import { HashingService } from 'src/auth/hashing.service';
 import { Repository } from 'typeorm';
+import { ConversationService } from 'src/conversation/conversation.service';
 
 @Injectable()
 export class UserService {
     constructor(
         @InjectRepository(User)
         private userRepository: Repository<User>,
-        private hashService: HashingService
+        private hashService: HashingService,
+        private conversationService: ConversationService
     ) { }
 
     findAll = async (): Promise<User[]> => {
@@ -79,5 +81,31 @@ export class UserService {
             .catch((error) => {
                 throw new BadRequestException('Failed to delete conversation' + error);
             });
+    }
+    async addPendingRequest(userId: number, askingUserId: number): Promise<void>{
+        if (!userId){
+            throw new BadRequestException('User ID is required');
+        }
+        if (!askingUserId){
+            throw new BadRequestException('User Request ID is required');
+        }
+        const user = await this.findOneById(userId);
+        await this.findOneById(askingUserId);
+
+        for (let i = 0; i < user.pendingUserIdRequests.length; i++) {
+            if (user.pendingUserIdRequests[i] == askingUserId) {
+                throw new BadRequestException('User already has a pending request from this user');
+            }
+        }
+        user.pendingUserIdRequests.push(askingUserId);
+        await this.userRepository.save(user);
+    }
+
+    async deletePendingRequest(){
+        //TODO
+    }
+
+    async acceptPendingRequest(){
+        //TODO
     }
 }
