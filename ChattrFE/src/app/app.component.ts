@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterOutlet, RouterLink, Router } from '@angular/router';
-import { AuthService } from './services/auth.service';
+import { AuthService } from './auth/services/auth.service';
 import { CookieService } from 'ngx-cookie-service';
 import { switchMap, tap } from 'rxjs';
 

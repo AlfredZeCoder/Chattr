@@ -1,11 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { SERVER_URL } from '../../../env';
-import { Token } from '../models/token.interface';
+import { SERVER_URL } from '../../../../env';
+import { Token } from '../../models/token.interface';
 import { CookieOptions, CookieService } from 'ngx-cookie-service';
 import { BehaviorSubject, switchMap } from 'rxjs';
-import { AddUser } from '../models/add-user.interface';
-import { User } from '../models/user.interface';
+import { AddUser } from '../../models/add-user.interface';
+import { User } from '../../models/user.interface';
 
 
 @Injectable({
@@ -36,7 +36,7 @@ export class AuthService {
 
   saveUserInfos$ = (access_token: string) => {
     return this.httpClient.get<User>(
-      SERVER_URL + '/user/one-by-id',
+      SERVER_URL + '/user/one-by-id-from-token',
       {
         headers: {
           Authorization: `Bearer ${access_token}`

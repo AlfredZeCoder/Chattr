@@ -3,7 +3,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { AsyncPipe, NgStyle } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { BehaviorSubject, switchMap, tap } from 'rxjs';
-import { AuthService } from '../services/auth.service';
+import { AuthService } from '../auth/services/auth.service';
 import { AddUser } from '../models/add-user.interface';
 import { ErrorMessage } from '../models/error-message.interface';
 

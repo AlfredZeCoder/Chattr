@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query, Req } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query, Req } from '@nestjs/common';
 import { ConversationService } from './conversation.service';
 import { AddConversationDto } from 'src/dtos/add-conversation.dto';
 import { RouteInfoPathExtractor } from '@nestjs/core/middleware/route-info-path-extractor';
@@ -28,5 +28,10 @@ export class ConversationController {
     @Post('add')
     async addConversation(@Body() conversation: AddConversationDto) {
         return await this.conversationService.createConversation(conversation);
+    }
+
+    @Delete('delete/:conversationId')
+    async deleteConversation(@Param('conversationId') conversationId: number) {
+        return await this.conversationService.deleteConversation(conversationId);
     }
 }

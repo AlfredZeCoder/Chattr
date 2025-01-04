@@ -84,7 +84,8 @@
     flex-direction: column;
     padding: 15px 0 7px 20px;
     width: auto;
-    height: 70px;
+    height: 55px;
+    border-bottom: 1px solid rgb(223, 223, 223);
     transition: background-color .2s;
     cursor: pointer;
 }
@@ -108,8 +109,18 @@
 }
 
 .conversation .last-message {
+    display: flex;
+    align-items: center;
     font-size: 14px;
     color: var(--gray-text);
+}
+
+.last-message .unread-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #007bff;
+    margin: 1px 10px 0 0;
 }
 
 .chat-container .chat {
