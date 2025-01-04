@@ -5,6 +5,7 @@ import { Conversation } from '../models/conversation.interface';
 import { Message } from '../models/message.interface';
 import { MessageService } from './message.service';
 import { AuthService } from '../auth/services/auth.service';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-message',

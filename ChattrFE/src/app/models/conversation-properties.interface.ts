@@ -1,5 +1,5 @@
 export interface ConversationProperties {
     id: number;
-    createdUserId: number;
+    createrUserId: number;
     askedUserId: number;
 }

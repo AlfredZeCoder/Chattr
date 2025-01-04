@@ -17,7 +17,7 @@ export class UserService {
     };
 
     findOneById = async (id: number): Promise<User | null> => {
-        if (!id) {
+        if (!id || isNaN(id)) {
             throw new BadRequestException('User ID is required');
         }
         const user = await this.userRepository.findOneBy({ id });
