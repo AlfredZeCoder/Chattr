@@ -11,8 +11,15 @@ import { Conversation } from "./entities/conversation.entity";
 import { Message } from "./entities/message.entity";
 import { ConversationModule } from './conversation/conversation.module';
 import { MessageModule } from './message/message.module';
-import { AuthUserGatewayModule } from './auth-user-gateway/auth-user-gateway.module';
-import { ConversationMessageGatewayModule } from './conversation-message-gateway/conversation-message-gateway.module';
+import { UserService } from "./user/user.service";
+import { AuthService } from "./auth/auth.service";
+import { MessageService } from "./message/message.service";
+import { ConversationService } from "./conversation/conversation.service";
+import { UserServiceSingleton } from "./singletones/user.service.singleton";
+import { AuthServiceSingleton } from "./singletones/auth.service.singleton";
+import { ConversationServiceSingleton } from "./singletones/conversation.service.singleton";
+import { MessageServiceSingleton } from "./singletones/message.service.singleton";
+import { AppInitializerService } from './app-initializer.service';
 
 @Module({
   imports: [
@@ -51,11 +58,12 @@ import { ConversationMessageGatewayModule } from './conversation-message-gateway
     AuthModule,
     ConversationModule,
     MessageModule,
-    AuthUserGatewayModule,
-    ConversationMessageGatewayModule,
 
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    AppInitializerService,
+  ],
 })
 export class AppModule { }

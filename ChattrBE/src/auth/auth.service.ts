@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, OnModuleInit, UnauthorizedException } from '@nestjs/common';
 import { HashingService } from './hashing.service';
 import { UserService } from 'src/user/user.service';
 import { LogInDto } from 'src/dtos/login.dto';
@@ -10,17 +10,25 @@ import { IAccessTokenPayload, IJwt } from 'src/models/access-token-payload';
 import { AddUserDto } from 'src/dtos/add-user.dto';
 import { Role } from 'src/models/role.enum';
 import { AddRoleDto } from 'src/dtos/add-role.dto';
+import { UserServiceSingleton } from 'src/singletones/user.service.singleton';
+import { NestFactory } from '@nestjs/core';
 
 
 @Injectable()
-export class AuthService {
+export class AuthService implements OnModuleInit {
+
+    private userService: UserService;
+
     constructor(
         @InjectRepository(User)
         private userRepository: Repository<User>,
         private hashingService: HashingService,
-        private userService: UserService,
         private jwtService: JwtService
-    ) { }
+    ) {
+    }
+    onModuleInit() {
+        this.userService = UserServiceSingleton.getInstance();
+    }
 
 
     async login(loginDto: LogInDto) {
@@ -32,6 +40,7 @@ export class AuthService {
         if (!loginDto.password) {
             throw new BadRequestException('Password is required');
         }
+        console.log(this.userService);
 
         const user = await this.userService.findOneByEmail(loginDto.email);
 

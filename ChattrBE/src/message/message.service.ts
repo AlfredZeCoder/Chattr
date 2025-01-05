@@ -1,27 +1,36 @@
-import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AddMessageDto } from 'src/dtos/add-message.dto';
 import { Message } from 'src/entities/message.entity';
 import { Repository } from 'typeorm';
 import { ConversationService } from 'src/conversation/conversation.service';
 import { UserService } from 'src/user/user.service';
-import { ConversationMessageGatewayService } from 'src/conversation-message-gateway/conversation-message-gateway.service';
+import { ConversationServiceSingleton } from 'src/singletones/conversation.service.singleton';
+import { UserServiceSingleton } from 'src/singletones/user.service.singleton';
 
 @Injectable()
-export class MessageService {
+export class MessageService implements OnModuleInit {
+
+    private conversationService: ConversationService;
+    private userService: UserService;
+
     constructor(
         @InjectRepository(Message)
         private messageRepository: Repository<Message>,
-        private conversationMessageGatewayService: ConversationMessageGatewayService,
-        private userService: UserService,
-    ) { }
+    ) {
+
+    }
+    onModuleInit() {
+        this.conversationService = ConversationServiceSingleton.getInstance();
+        this.userService = UserServiceSingleton.getInstance();
+    }
 
     async getAllMessagesFromConversationId(conversationId: number): Promise<Message[]> {
         if (!conversationId) {
             throw new BadRequestException('Conversation id is required');
         }
 
-        await this.conversationMessageGatewayService.getConversationById(conversationId);
+        await this.conversationService.getConversationById(conversationId);
 
         const messages = await this.messageRepository.find(
             {
@@ -61,7 +70,7 @@ export class MessageService {
             throw new BadRequestException('Conversation id is required');
         }
 
-        await this.conversationMessageGatewayService.getConversationById(conversationId);
+        await this.conversationService.getConversationById(conversationId);
 
         const message = await this.messageRepository.findOne(
             {
@@ -91,7 +100,7 @@ export class MessageService {
             throw new BadRequestException('Timestamp is required');
         }
         await this.userService.findOneById(message.senderId);
-        await this.conversationMessageGatewayService.getConversationById(message.conversationId);
+        await this.conversationService.getConversationById(message.conversationId);
         await this.messageRepository.save(message);
     }
 

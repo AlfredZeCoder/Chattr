@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, Headers, Param, Post, Put, Query } from '@nestjs/common';
+import { Controller, Get, UseGuards, Headers, Param, Post, Put, Query, OnModuleInit } from '@nestjs/common';
 import { UserService } from './user.service';
 import { GetUserDto } from 'src/dtos/get-user.dto';
 import { RoleGuard } from 'src/auth/guards/role.guard';
@@ -9,17 +9,21 @@ import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { AuthService } from 'src/auth/auth.service';
 import { IAccessTokenPayload, IJwt } from 'src/models/access-token-payload';
 import { Public } from 'src/decorators/public.decorator';
-import { AuthUserGatewayService } from 'src/auth-user-gateway/auth-user-gateway.service';
+import { AuthServiceSingleton } from 'src/singletones/auth.service.singleton';
 
 @Controller('user')
 @UseGuards(AuthGuard)
 @ApiBearerAuth()
-export class UserController {
+export class UserController implements OnModuleInit {
+    private authService: AuthService;
 
     constructor(
         private userService: UserService,
-        private authUserGatewayService: AuthUserGatewayService,
-    ) { }
+    ) {
+    }
+    onModuleInit() {
+        this.authService = AuthServiceSingleton.getInstance();
+    }
 
     @UseGuards(RoleGuard)
     @Roles(Role.Admin)
@@ -35,7 +39,7 @@ export class UserController {
         const token: IJwt = {
             token: authorization.split(' ')[1]
         };
-        const payload = await this.authUserGatewayService.decipherTokenToPayload(token) as IAccessTokenPayload;
+        const payload = await this.authService.decipherTokenToPayload(token) as IAccessTokenPayload;
         const user = await this.userService.findOneById(payload.sub);
         return GetUserDto.toDto(user);
     }

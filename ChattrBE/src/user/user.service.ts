@@ -1,17 +1,22 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, OnApplicationBootstrap, OnModuleInit, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import { HashingService } from 'src/auth/hashing.service';
 import { Repository } from 'typeorm';
 import { AddUserDto } from 'src/dtos/add-user.dto';
+import { HashingServiceSingleton } from 'src/singletones/hashing.service.singleton';
 
 @Injectable()
-export class UserService {
+export class UserService implements OnModuleInit {
+    private hashingService: HashingService;
+
     constructor(
         @InjectRepository(User)
         private userRepository: Repository<User>,
-        private hashingService: HashingService
     ) { }
+    onModuleInit() {
+        this.hashingService = HashingServiceSingleton.getInstance();
+    }
 
     addUser = async (user: AddUserDto): Promise<User> => {
         if (!user.firstName) {

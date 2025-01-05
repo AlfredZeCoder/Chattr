@@ -1,21 +1,30 @@
-import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ConversationMessageGatewayService } from 'src/conversation-message-gateway/conversation-message-gateway.service';
 import { AddConversationDto } from 'src/dtos/add-conversation.dto';
 import { Conversation } from 'src/entities/conversation.entity';
 import { User } from 'src/entities/user.entity';
 import { MessageService } from 'src/message/message.service';
+import { MessageServiceSingleton } from 'src/singletones/message.service.singleton';
+import { UserServiceSingleton } from 'src/singletones/user.service.singleton';
 import { UserService } from 'src/user/user.service';
 import { Repository } from 'typeorm';
 
 @Injectable()
-export class ConversationService {
+export class ConversationService implements OnModuleInit {
+
+    private messageService: MessageService;
+    private userService: UserService;
+
     constructor(
         @InjectRepository(Conversation)
         private conversationRepository: Repository<Conversation>,
-        private userService: UserService,
-        private conversationMessageGatewayService: ConversationMessageGatewayService,
-    ) { }
+    ) {
+
+    }
+    onModuleInit() {
+        this.messageService = MessageServiceSingleton.getInstance();
+        this.userService = UserServiceSingleton.getInstance();
+    }
 
     async getAllConversations(): Promise<Conversation[]> {
         return await this.conversationRepository.find();
@@ -98,9 +107,9 @@ export class ConversationService {
         await this.userService.deleteConversationById(createrUser.id, conversationId);
         await this.userService.deleteConversationById(askedUser.id, conversationId);
 
-        const messages = await this.conversationMessageGatewayService.getAllMessagesFromConversationId(conversationId);
+        const messages = await this.messageService.getAllMessagesFromConversationId(conversationId);
         await Promise.all(
-            messages.map((message) => this.conversationMessageGatewayService.deleteMessage(message.id))
+            messages.map((message) => this.messageService.deleteMessage(message.id))
         );
         await this.conversationRepository.delete(conversationId)
             .catch((error) => {
