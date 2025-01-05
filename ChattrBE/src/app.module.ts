@@ -11,6 +11,8 @@ import { Conversation } from "./entities/conversation.entity";
 import { Message } from "./entities/message.entity";
 import { ConversationModule } from './conversation/conversation.module';
 import { MessageModule } from './message/message.module';
+import { AuthUserGatewayModule } from './auth-user-gateway/auth-user-gateway.module';
+import { ConversationMessageGatewayModule } from './conversation-message-gateway/conversation-message-gateway.module';
 
 @Module({
   imports: [
@@ -49,6 +51,8 @@ import { MessageModule } from './message/message.module';
     AuthModule,
     ConversationModule,
     MessageModule,
+    AuthUserGatewayModule,
+    ConversationMessageGatewayModule,
 
   ],
   controllers: [AppController],

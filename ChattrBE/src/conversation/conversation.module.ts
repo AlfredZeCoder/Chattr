@@ -6,6 +6,7 @@ import { Conversation } from 'src/entities/conversation.entity';
 import { UserModule } from 'src/user/user.module';
 import { MessageModule } from 'src/message/message.module';
 import { MessageService } from 'src/message/message.service';
+import { ConversationMessageGatewayModule } from 'src/conversation-message-gateway/conversation-message-gateway.module';
 
 @Module({
   imports: [
@@ -13,7 +14,7 @@ import { MessageService } from 'src/message/message.service';
       Conversation,
     ]),
     UserModule,
-    forwardRef(() => MessageModule)
+    ConversationMessageGatewayModule
   ],
   providers: [ConversationService],
   controllers: [ConversationController],

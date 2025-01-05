@@ -5,15 +5,15 @@ import { Message } from 'src/entities/message.entity';
 import { Repository } from 'typeorm';
 import { ConversationService } from 'src/conversation/conversation.service';
 import { UserService } from 'src/user/user.service';
+import { ConversationMessageGatewayService } from 'src/conversation-message-gateway/conversation-message-gateway.service';
 
 @Injectable()
 export class MessageService {
     constructor(
         @InjectRepository(Message)
         private messageRepository: Repository<Message>,
-        @Inject(forwardRef(() => ConversationService))
-        private conversationService: ConversationService,
-        private userService: UserService
+        private conversationMessageGatewayService: ConversationMessageGatewayService,
+        private userService: UserService,
     ) { }
 
     async getAllMessagesFromConversationId(conversationId: number): Promise<Message[]> {
@@ -21,7 +21,7 @@ export class MessageService {
             throw new BadRequestException('Conversation id is required');
         }
 
-        await this.conversationService.getConversationById(conversationId);
+        await this.conversationMessageGatewayService.getConversationById(conversationId);
 
         const messages = await this.messageRepository.find(
             {
@@ -61,7 +61,7 @@ export class MessageService {
             throw new BadRequestException('Conversation id is required');
         }
 
-        await this.conversationService.getConversationById(conversationId);
+        await this.conversationMessageGatewayService.getConversationById(conversationId);
 
         const message = await this.messageRepository.findOne(
             {
@@ -91,7 +91,7 @@ export class MessageService {
             throw new BadRequestException('Timestamp is required');
         }
         await this.userService.findOneById(message.senderId);
-        await this.conversationService.getConversationById(message.conversationId);
+        await this.conversationMessageGatewayService.getConversationById(message.conversationId);
         await this.messageRepository.save(message);
     }
 

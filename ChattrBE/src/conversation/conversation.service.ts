@@ -1,5 +1,6 @@
 import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ConversationMessageGatewayService } from 'src/conversation-message-gateway/conversation-message-gateway.service';
 import { AddConversationDto } from 'src/dtos/add-conversation.dto';
 import { Conversation } from 'src/entities/conversation.entity';
 import { User } from 'src/entities/user.entity';
@@ -13,8 +14,7 @@ export class ConversationService {
         @InjectRepository(Conversation)
         private conversationRepository: Repository<Conversation>,
         private userService: UserService,
-        @Inject(forwardRef(() => MessageService))
-        private messageService: MessageService
+        private conversationMessageGatewayService: ConversationMessageGatewayService,
     ) { }
 
     async getAllConversations(): Promise<Conversation[]> {
@@ -98,9 +98,9 @@ export class ConversationService {
         await this.userService.deleteConversationById(createrUser.id, conversationId);
         await this.userService.deleteConversationById(askedUser.id, conversationId);
 
-        const messages = await this.messageService.getAllMessagesFromConversationId(conversationId);
+        const messages = await this.conversationMessageGatewayService.getAllMessagesFromConversationId(conversationId);
         await Promise.all(
-            messages.map((message) => this.messageService.deleteMessage(message.id))
+            messages.map((message) => this.conversationMessageGatewayService.deleteMessage(message.id))
         );
         await this.conversationRepository.delete(conversationId)
             .catch((error) => {

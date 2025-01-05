@@ -9,6 +9,7 @@ import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { AuthService } from 'src/auth/auth.service';
 import { IAccessTokenPayload, IJwt } from 'src/models/access-token-payload';
 import { Public } from 'src/decorators/public.decorator';
+import { AuthUserGatewayService } from 'src/auth-user-gateway/auth-user-gateway.service';
 
 @Controller('user')
 @UseGuards(AuthGuard)
@@ -17,7 +18,7 @@ export class UserController {
 
     constructor(
         private userService: UserService,
-        private authService: AuthService
+        private authUserGatewayService: AuthUserGatewayService,
     ) { }
 
     @UseGuards(RoleGuard)
@@ -34,7 +35,7 @@ export class UserController {
         const token: IJwt = {
             token: authorization.split(' ')[1]
         };
-        const payload = await this.authService.decipherTokenToPayload(token) as IAccessTokenPayload;
+        const payload = await this.authUserGatewayService.decipherTokenToPayload(token) as IAccessTokenPayload;
         const user = await this.userService.findOneById(payload.sub);
         return GetUserDto.toDto(user);
     }
@@ -47,7 +48,7 @@ export class UserController {
 
     @Public()
     @Put('add-conversation-request/:userId/:askingUserId')
-    async addPendingRequest(@Param ('userId') userId: number, @Param('askingUserId') askingUserId: number) {
+    async addPendingRequest(@Param('userId') userId: number, @Param('askingUserId') askingUserId: number) {
         return await this.userService.addPendingRequest(userId, askingUserId);
     }
 }

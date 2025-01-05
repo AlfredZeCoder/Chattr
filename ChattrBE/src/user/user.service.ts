@@ -3,14 +3,41 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import { HashingService } from 'src/auth/hashing.service';
 import { Repository } from 'typeorm';
+import { AddUserDto } from 'src/dtos/add-user.dto';
 
 @Injectable()
 export class UserService {
     constructor(
         @InjectRepository(User)
         private userRepository: Repository<User>,
-        private hashService: HashingService
+        private hashingService: HashingService
     ) { }
+
+    addUser = async (user: AddUserDto): Promise<User> => {
+        if (!user.firstName) {
+            throw new BadRequestException('First name is required');
+        }
+
+        if (!user.lastName) {
+            throw new BadRequestException('Last name is required');
+        }
+
+        if (!user.email) {
+            throw new BadRequestException('Email is required');
+        }
+        if (!user.password) {
+            throw new BadRequestException('Password is required');
+        }
+
+        if (await this.findOneByEmail(user.email)) {
+            throw new BadRequestException('User already exists');
+        }
+
+        let newUser = this.userRepository.create(user);
+        newUser.password = await this.hashingService.hashPassword(user.password);
+        newUser = await this.userRepository.save(newUser);
+        return newUser;
+    };
 
     findAll = async (): Promise<User[]> => {
         return await this.userRepository.find();
@@ -80,11 +107,11 @@ export class UserService {
                 throw new BadRequestException('Failed to delete conversation' + error);
             });
     }
-    async addPendingRequest(userId: number, askingUserId: number): Promise<void>{
-        if (!userId){
+    async addPendingRequest(userId: number, askingUserId: number): Promise<void> {
+        if (!userId) {
             throw new BadRequestException('User ID is required');
         }
-        if (!askingUserId){
+        if (!askingUserId) {
             throw new BadRequestException('User Request ID is required');
         }
         const user = await this.findOneById(userId);
@@ -99,11 +126,11 @@ export class UserService {
         await this.userRepository.save(user);
     }
 
-    async deletePendingRequest(){
+    async deletePendingRequest() {
         //TODO
     }
 
-    async acceptPendingRequest(){
+    async acceptPendingRequest() {
         //TODO
     }
 }

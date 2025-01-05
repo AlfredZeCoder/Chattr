@@ -23,32 +23,6 @@ export class AuthService {
     ) { }
 
 
-    addUser = async (user: AddUserDto): Promise<User> => {
-        if (!user.firstName) {
-            throw new BadRequestException('First name is required');
-        }
-
-        if (!user.lastName) {
-            throw new BadRequestException('Last name is required');
-        }
-
-        if (!user.email) {
-            throw new BadRequestException('Email is required');
-        }
-        if (!user.password) {
-            throw new BadRequestException('Password is required');
-        }
-
-        if (await this.userService.findOneByEmail(user.email)) {
-            throw new BadRequestException('User already exists');
-        }
-
-        let newUser = this.userRepository.create(user);
-        newUser.password = await this.hashingService.hashPassword(user.password);
-        newUser = await this.userRepository.save(newUser);
-        return newUser;
-    };
-
     async login(loginDto: LogInDto) {
 
         if (!loginDto.email) {

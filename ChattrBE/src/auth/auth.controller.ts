@@ -1,14 +1,14 @@
-import { Body, Controller, Post, Put, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, Put, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LogInDto } from 'src/dtos/login.dto';
 import { AccessTokenPayloadParser, IAccessTokenPayload, IJwt } from 'src/models/access-token-payload';
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from 'src/user/user.service';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { AddUserDto } from 'src/dtos/add-user.dto';
 import { AddRoleDto } from 'src/dtos/add-role.dto';
 import { AuthGuard } from './guards/auth.guard';
 import { Public } from 'src/decorators/public.decorator';
+import { AuthUserGatewayService } from 'src/auth-user-gateway/auth-user-gateway.service';
 
 @Controller('auth')
 @UseGuards(AuthGuard)
@@ -17,13 +17,13 @@ export class AuthController {
     constructor(
         private authService: AuthService,
         private jwtService: JwtService,
-        private userService: UserService
+        private authUserGatewayService: AuthUserGatewayService,
     ) { }
 
     @Public()
     @Post('add')
     async addUser(@Body() userP: AddUserDto) {
-        const user = await this.authService.addUser(userP);
+        const user = await this.authUserGatewayService.addUser(userP);
         const payload = AccessTokenPayloadParser.parseToPayload(user);
         return {
             token: await this.jwtService.signAsync(payload, { secret: process.env.JWT_SECRET }),
@@ -46,7 +46,7 @@ export class AuthController {
     @Post('login-with-token')
     async loginWithToken(@Body() token: IJwt) {
         const payload = <IAccessTokenPayload>await this.authService.loginWithToken(token);
-        const user = await this.userService.findOneByEmail(payload.email);
+        const user = await this.authUserGatewayService.findOneByEmail(payload.email);
         return {
             token: await this.jwtService.signAsync(
                 AccessTokenPayloadParser.parseToPayload(user),
