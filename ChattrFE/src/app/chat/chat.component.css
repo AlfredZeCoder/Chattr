@@ -57,12 +57,13 @@
     margin-bottom: 10px;
 }
 
-.search-bar .new-message {
+.search-bar .icon {
     color: var(--dark-white);
     width: 10%;
     height: 100%;
     margin-left: 10px;
     cursor: pointer;
+    /* transition: width .2s ease; */
 }
 
 .search-bar input {

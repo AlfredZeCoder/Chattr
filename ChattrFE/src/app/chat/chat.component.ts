@@ -43,6 +43,7 @@ export class ChatComponent implements OnInit {
     const sanitizer = inject(DomSanitizer);
 
     iconRegistry.addSvgIconLiteral('new-message', sanitizer.bypassSecurityTrustHtml(iconSVG.newMessage));
+    iconRegistry.addSvgIconLiteral('close', sanitizer.bypassSecurityTrustHtml(iconSVG.close));
   }
 
   ngOnInit() {
@@ -59,13 +60,16 @@ export class ChatComponent implements OnInit {
 
   }
 
-  searchValue: string = '';
+  searchUser: string = '';
+  searchAddUser: string = '';
   hasClickedConversation: boolean = false;
   clickedConversationId!: number;
   inputConversation!: Conversation;
   conversationsProperties: ConversationProperties[] = [];
   yesterday = new Date(new Date().setDate(new Date().getDate() - 1));
   conversations: Conversation[] = [];
+  hasClickedAddingUser: boolean = false;
+  isAddingUser: boolean = false;
 
 
   isYesterday(timestamp: Date) {
@@ -86,6 +90,17 @@ export class ChatComponent implements OnInit {
             this.chatService.getAllConversationPropertiesFromUserId$(user.id)
         ),
       );
+  }
+
+  addingUser() {
+    this.isAddingUser = !this.isAddingUser;
+    setTimeout(() => {
+      this.hasClickedAddingUser = !this.hasClickedAddingUser;
+      this.isAddingUser = !this.isAddingUser;
+      setTimeout(() => {
+        this.isAddingUser = !this.isAddingUser;
+      }, 1);
+    }, 300);
   }
 
   async assignConversations() {
