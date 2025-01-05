@@ -11,6 +11,7 @@ import { Conversation } from "./entities/conversation.entity";
 import { Message } from "./entities/message.entity";
 import { ConversationModule } from './conversation/conversation.module';
 import { MessageModule } from './message/message.module';
+import { AppInitializerService } from './app-initializer.service';
 
 @Module({
   imports: [
@@ -52,6 +53,9 @@ import { MessageModule } from './message/message.module';
 
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    AppInitializerService,
+  ],
 })
 export class AppModule { }

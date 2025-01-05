@@ -35,4 +35,10 @@ export class User {
     })
     conversationsId: number[];
 
+    @Column('int', {
+        array: true,
+        nullable: false,
+        default: []
+    })
+    pendingUserIdRequests: number[];
 }

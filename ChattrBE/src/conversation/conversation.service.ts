@@ -1,21 +1,28 @@
-import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AddConversationDto } from 'src/dtos/add-conversation.dto';
 import { Conversation } from 'src/entities/conversation.entity';
-import { User } from 'src/entities/user.entity';
 import { MessageService } from 'src/message/message.service';
+import { MessageServiceSingleton } from 'src/singletones/message.service.singleton';
+import { UserServiceSingleton } from 'src/singletones/user.service.singleton';
 import { UserService } from 'src/user/user.service';
 import { Repository } from 'typeorm';
 
 @Injectable()
-export class ConversationService {
+export class ConversationService implements OnModuleInit {
+    private messageService: MessageService;
+    private userService: UserService;
+
     constructor(
         @InjectRepository(Conversation)
         private conversationRepository: Repository<Conversation>,
-        private userService: UserService,
-        @Inject(forwardRef(() => MessageService))
-        private messageService: MessageService
-    ) { }
+    ) {
+
+    }
+    onModuleInit() {
+        this.messageService = MessageServiceSingleton.getInstance();
+        this.userService = UserServiceSingleton.getInstance();
+    }
 
     async getAllConversations(): Promise<Conversation[]> {
         return await this.conversationRepository.find();

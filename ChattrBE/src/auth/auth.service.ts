@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, OnModuleInit, UnauthorizedException } from '@nestjs/common';
 import { HashingService } from './hashing.service';
 import { UserService } from 'src/user/user.service';
 import { LogInDto } from 'src/dtos/login.dto';
@@ -7,47 +7,26 @@ import { User } from 'src/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { IAccessTokenPayload, IJwt } from 'src/models/access-token-payload';
-import { AddUserDto } from 'src/dtos/add-user.dto';
 import { Role } from 'src/models/role.enum';
 import { AddRoleDto } from 'src/dtos/add-role.dto';
-
+import { UserServiceSingleton } from 'src/singletones/user.service.singleton';
 
 @Injectable()
-export class AuthService {
+export class AuthService implements OnModuleInit {
+
+    private userService: UserService;
+
     constructor(
         @InjectRepository(User)
         private userRepository: Repository<User>,
         private hashingService: HashingService,
-        private userService: UserService,
         private jwtService: JwtService
-    ) { }
+    ) {
+    }
+    onModuleInit() {
+        this.userService = UserServiceSingleton.getInstance();
+    }
 
-
-    addUser = async (user: AddUserDto): Promise<User> => {
-        if (!user.firstName) {
-            throw new BadRequestException('First name is required');
-        }
-
-        if (!user.lastName) {
-            throw new BadRequestException('Last name is required');
-        }
-
-        if (!user.email) {
-            throw new BadRequestException('Email is required');
-        }
-        if (!user.password) {
-            throw new BadRequestException('Password is required');
-        }
-
-        if (await this.userService.findOneByEmail(user.email)) {
-            throw new BadRequestException('User already exists');
-        }
-
-        let newUser = this.userRepository.create(user);
-        newUser.password = await this.hashingService.hashPassword(user.password);
-        newUser = await this.userRepository.save(newUser);
-        return newUser;
-    };
 
     async login(loginDto: LogInDto) {
 

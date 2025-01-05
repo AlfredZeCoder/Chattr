@@ -1,10 +1,13 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { ValidationPipe } from '@nestjs/common';
+import { AppInitializerService } from './app-initializer.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  const appInitializerService = app.select(AppModule).get(AppInitializerService);
+  await appInitializerService.initialize();
 
   const config = new DocumentBuilder()
     .setTitle('Chattr API')
