@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, Headers, Param, Post, Put, Query, OnModuleInit } from '@nestjs/common';
+import { Controller, Get, UseGuards, Headers, Param, Put, OnModuleInit } from '@nestjs/common';
 import { UserService } from './user.service';
 import { GetUserDto } from 'src/dtos/get-user.dto';
 import { RoleGuard } from 'src/auth/guards/role.guard';

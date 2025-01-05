@@ -1,5 +1,4 @@
 import { HashingService } from "src/auth/hashing.service";
-import { ConversationService } from "src/conversation/conversation.service";
 
 export class HashingServiceSingleton {
     private static instance: HashingService;

@@ -7,12 +7,9 @@ import { User } from 'src/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { IAccessTokenPayload, IJwt } from 'src/models/access-token-payload';
-import { AddUserDto } from 'src/dtos/add-user.dto';
 import { Role } from 'src/models/role.enum';
 import { AddRoleDto } from 'src/dtos/add-role.dto';
 import { UserServiceSingleton } from 'src/singletones/user.service.singleton';
-import { NestFactory } from '@nestjs/core';
-
 
 @Injectable()
 export class AuthService implements OnModuleInit {
@@ -40,7 +37,6 @@ export class AuthService implements OnModuleInit {
         if (!loginDto.password) {
             throw new BadRequestException('Password is required');
         }
-        console.log(this.userService);
 
         const user = await this.userService.findOneByEmail(loginDto.email);
 

@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, OnApplicationBootstrap, OnModuleInit, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, OnModuleInit, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import { HashingService } from 'src/auth/hashing.service';
@@ -14,6 +14,7 @@ export class UserService implements OnModuleInit {
         @InjectRepository(User)
         private userRepository: Repository<User>,
     ) { }
+
     onModuleInit() {
         this.hashingService = HashingServiceSingleton.getInstance();
     }

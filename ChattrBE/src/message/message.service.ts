@@ -1,4 +1,4 @@
-import { BadRequestException, forwardRef, Inject, Injectable, OnModuleInit } from '@nestjs/common';
+import { BadRequestException, Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AddMessageDto } from 'src/dtos/add-message.dto';
 import { Message } from 'src/entities/message.entity';
@@ -10,7 +10,6 @@ import { UserServiceSingleton } from 'src/singletones/user.service.singleton';
 
 @Injectable()
 export class MessageService implements OnModuleInit {
-
     private conversationService: ConversationService;
     private userService: UserService;
 
