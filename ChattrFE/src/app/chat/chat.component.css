@@ -63,7 +63,6 @@
     height: 100%;
     margin-left: 10px;
     cursor: pointer;
-    transition: width .2s;
 }
 
 .search-bar input {
@@ -83,7 +82,6 @@
     background-color: rgb(65, 65, 65);
     border-radius: 15px;
     overflow-y: auto;
-    /* border: 1px solid red; */
 }
 
 .conversations-container .conversations::-webkit-scrollbar {
