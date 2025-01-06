@@ -5,15 +5,15 @@
                 <div class="search-bar">
                     @if (!hasClickedAddingUser) {
                     <input [(ngModel)]="searchUser" type="text"
-                        [ngStyle]="{'width' : isAddingUser ? '0%' : '90%', 'transition' : 'width 0.3s ease-in-out' }"
-                        class="search" placeholder="Search" />
-                    <mat-icon [ngStyle]="{'margin-left' : isAddingUser ? '280px' : null, 'transition' : 'margin 0.3s'}"
+                        [ngStyle]="{'width' : isAddingUser ? '0%' : '90%', 'transition' : 'width 0.3s' }" class="search"
+                        placeholder="Search" />
+                    <mat-icon [ngStyle]="{'margin-left' : isAddingUser ? '282px' : null, 'transition' : 'margin 0.3s'}"
                         class="icon" svgIcon="new-message" (click)="addingUser()"></mat-icon>
                     } @else {
                     <input [(ngModel)]="searchAddUser" type="text" class="search"
-                        [ngStyle]="{'width' : !isAddingUser ? '0%' : '90%', 'transition' : 'width 0.3s ease-in-out' }"
+                        [ngStyle]="{'width' : !isAddingUser ? '0%' : '90%', 'transition' : 'width 0.3s' }"
                         placeholder="Enter the email of the user you want to add" />
-                    <mat-icon [ngStyle]="{'margin-left' : !isAddingUser ? '280px' : null, 'transition' : 'margin 0.3s'}"
+                    <mat-icon [ngStyle]="{'margin-left' : !isAddingUser ? '282px' : null, 'transition' : 'margin 0.3s'}"
                         class="icon" svgIcon="close" (click)="addingUser()"></mat-icon>
                     }
                 </div>

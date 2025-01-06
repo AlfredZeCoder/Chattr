@@ -110,6 +110,7 @@ export class ChatComponent implements OnInit {
       });
   }
 
+
   async aggregateConversations() {
     const conversations: Conversation[] = [];
 

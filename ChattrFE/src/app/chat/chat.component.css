@@ -63,7 +63,7 @@
     height: 100%;
     margin-left: 10px;
     cursor: pointer;
-    /* transition: width .2s ease; */
+    transition: width .2s;
 }
 
 .search-bar input {
