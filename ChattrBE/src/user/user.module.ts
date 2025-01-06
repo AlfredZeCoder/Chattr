@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import { HashingService } from 'src/auth/hashing.service';
 import { AuthModule } from 'src/auth/auth.module';
+import { Conversation } from 'src/entities/conversation.entity';
 
 @Module({
   imports: [

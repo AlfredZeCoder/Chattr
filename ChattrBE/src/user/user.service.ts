@@ -1,14 +1,17 @@
-import { BadRequestException, Injectable, OnModuleInit, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, HttpCode, HttpStatus, ImATeapotException, Injectable, OnModuleInit, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import { HashingService } from 'src/auth/hashing.service';
 import { Repository } from 'typeorm';
 import { AddUserDto } from 'src/dtos/add-user.dto';
 import { HashingServiceSingleton } from 'src/singletones/hashing.service.singleton';
+import { ConversationService } from 'src/conversation/conversation.service';
+import { ConversationServiceSingleton } from 'src/singletones/conversation.service.singleton';
 
 @Injectable()
 export class UserService implements OnModuleInit {
     private hashingService: HashingService;
+    private conversationService: ConversationService;
 
     constructor(
         @InjectRepository(User)
@@ -17,6 +20,7 @@ export class UserService implements OnModuleInit {
 
     onModuleInit() {
         this.hashingService = HashingServiceSingleton.getInstance();
+        this.conversationService = ConversationServiceSingleton.getInstance();
     }
 
     addUser = async (user: AddUserDto): Promise<User> => {
@@ -113,7 +117,12 @@ export class UserService implements OnModuleInit {
                 throw new BadRequestException('Failed to delete conversation' + error);
             });
     }
+
+
     async addPendingRequest(userId: number, askingUserId: number): Promise<void> {
+        if (userId == askingUserId){
+            throw new BadRequestException('Est tu si seul pour te parler a toi meme')
+        }
         if (!userId) {
             throw new BadRequestException('User ID is required');
         }
@@ -128,15 +137,39 @@ export class UserService implements OnModuleInit {
                 throw new BadRequestException('User already has a pending request from this user');
             }
         }
+        const conversations = await this.conversationService.getAllConversationsByUserId(userId);
+        conversations.map((conversation) => {
+            if (userId == conversation.createrUserId || userId == conversation.askedUserId &&
+                askingUserId == conversation.askedUserId || askingUserId == conversation.createrUserId){
+                throw new BadRequestException('A conversation already exist')
+            }
+        })
         user.pendingUserIdRequests.push(askingUserId);
         await this.userRepository.save(user);
     }
 
-    async deletePendingRequest() {
-        //TODO
+
+    async getAllPendingRequestsByUserId(userId : number){
+        const user = await this.findOneById(userId);
+        return user.pendingUserIdRequests
+    }
+
+    async deletePendingRequest(userId: number, askingUserId: number): Promise<void> {
+        const user = await this.findOneById(userId);
+        const userPendingRequests = await this.getAllPendingRequestsByUserId(userId)
+        const newPendingRequests = []
+        for (let index = 0; index < userPendingRequests.length; index++) {
+            const pendingRequest = userPendingRequests[index];
+            if (pendingRequest !== askingUserId){
+                newPendingRequests.push(pendingRequest);
+            }
+        }
+        user.pendingUserIdRequests = newPendingRequests;
+        await this.userRepository.save(user)
     }
 
     async acceptPendingRequest() {
-        //TODO
+        //create conversation
+        //delete pending request
     }
 }

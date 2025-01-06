@@ -55,4 +55,10 @@ export class UserController implements OnModuleInit {
     async addPendingRequest(@Param('userId') userId: number, @Param('askingUserId') askingUserId: number) {
         return await this.userService.addPendingRequest(userId, askingUserId);
     }
+    @Public()
+    @Put('delete-pending-request/:userId/:askingUserId')
+    async deletePendingRequest(@Param('userId') userId: number, @Param('askingUserId') askingUserId: number) {
+        return await this.userService.deletePendingRequest(+userId, +askingUserId);
+    }
+    
 }
