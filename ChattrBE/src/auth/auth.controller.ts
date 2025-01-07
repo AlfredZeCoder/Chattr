@@ -68,7 +68,12 @@ export class AuthController implements OnModuleInit {
         const payload = AccessTokenPayloadParser.parseToPayload(user);
 
         return {
-            token: await this.jwtService.signAsync(payload, { secret: process.env.JWT_SECRET }),
+            token: await this.jwtService.signAsync(
+                payload,
+                {
+                    secret: process.env.JWT_SECRET
+                }
+            ),
         };
 
     }

@@ -29,6 +29,9 @@ export class AuthService implements OnModuleInit {
 
 
     async login(loginDto: LogInDto) {
+        if (!loginDto) {
+            throw new BadRequestException('Login data is required');
+        }
 
         if (!loginDto.email) {
             throw new BadRequestException('Email is required');
@@ -40,9 +43,6 @@ export class AuthService implements OnModuleInit {
 
         const user = await this.userService.findOneByEmail(loginDto.email);
 
-        if (!user) {
-            throw new BadRequestException('User not found');
-        }
         const passwordMatch = await this.hashingService.comparePassword(loginDto.password, user.password);
 
         if (!passwordMatch) {
@@ -52,7 +52,7 @@ export class AuthService implements OnModuleInit {
     }
 
     async loginWithToken(token: IJwt) {
-        if (!token.token) {
+        if (!token || !token.token) {
             throw new BadRequestException('Token is required');
         }
 
@@ -60,11 +60,11 @@ export class AuthService implements OnModuleInit {
     }
 
     async decipherTokenToPayload(token: IJwt) {
-        if (!token.token) {
+        if (!token || !token.token) {
             throw new BadRequestException('Token is required');
         }
 
-        const verifiedToken = await this.jwtService.verifyAsync<IAccessTokenPayload>(
+        return await this.jwtService.verifyAsync<IAccessTokenPayload>(
             token.token,
             {
                 secret: process.env.JWT_SECRET
@@ -77,11 +77,13 @@ export class AuthService implements OnModuleInit {
                 throw new UnauthorizedException('Token is invalid');
             }
         });
-
-        return verifiedToken;
     }
 
     async addRole(addRoleDto: AddRoleDto) {
+        if (!addRoleDto) {
+            throw new BadRequestException('Role data is required');
+        }
+
         if (!addRoleDto.userId) {
             throw new BadRequestException('User ID is required');
         }
@@ -92,19 +94,11 @@ export class AuthService implements OnModuleInit {
 
         const user = await this.userService.findOneById(addRoleDto.userId);
 
-        if (!user) {
-            throw new BadRequestException('User not found');
-        }
-
-        if (!addRoleDto.role) {
-            throw new BadRequestException('Wrong role');
-        }
-
-        if (user.role.includes(addRoleDto.role as Role)) {
+        if (user.role.includes(addRoleDto.role)) {
             throw new BadRequestException('User is already a ' + addRoleDto.role);
         }
 
-        user.role.push(addRoleDto.role as Role);
+        user.role.push(addRoleDto.role);
 
         await this.userRepository.save(user);
 

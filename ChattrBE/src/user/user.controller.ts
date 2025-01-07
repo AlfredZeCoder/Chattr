@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, Headers, Param, Put, OnModuleInit } from '@nestjs/common';
+import { Controller, Get, UseGuards, Headers, Param, Put, OnModuleInit, ParseIntPipe } from '@nestjs/common';
 import { UserService } from './user.service';
 import { GetUserDto } from 'src/dtos/get-user.dto';
 import { RoleGuard } from 'src/auth/guards/role.guard';
@@ -45,14 +45,25 @@ export class UserController implements OnModuleInit {
     }
     @Public()
     @Get('one-by-id/:id')
-    async findOneByIdFromParam(@Param('id') id: number) {
+    async findOneByIdFromParam(@Param('id', ParseIntPipe) id: number) {
         const user = await this.userService.findOneById(id);
         return GetUserDto.toDto(user);
     }
 
     @Public()
     @Put('add-conversation-request/:userId/:askingUserId')
-    async addPendingRequest(@Param('userId') userId: number, @Param('askingUserId') askingUserId: number) {
+    async addPendingRequest(@Param('userId', ParseIntPipe) userId: number, @Param('askingUserId', ParseIntPipe) askingUserId: number) {
         return await this.userService.addPendingRequest(userId, askingUserId);
     }
+    @Public()
+    @Put('delete-pending-request/:userId/:askingUserId')
+    async deletePendingRequest(@Param('userId', ParseIntPipe) userId: number, @Param('askingUserId', ParseIntPipe) askingUserId: number) {
+        return await this.userService.deletePendingRequest(userId, askingUserId);
+    }
+    @Public()
+    @Put('accept-conversation-request/:userId/:askingUserId')
+    async acceptPendingRequest(@Param('userId', ParseIntPipe) userId: number, @Param('askingUserId', ParseIntPipe) askingUserId: number) {
+        return await this.userService.acceptPendingRequest(userId, askingUserId);
+    }
+
 }

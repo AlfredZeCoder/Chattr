@@ -7,6 +7,7 @@ export class GetUserDto {
     lastName: string;
     email: string;
     conversationsId: number[];
+    pendingUserIdRequests: number[];
 
     static toDto(entity: User) {
         const userDto = new GetUserDto();
@@ -15,6 +16,7 @@ export class GetUserDto {
         userDto.firstName = entity.firstName;
         userDto.lastName = entity.lastName;
         userDto.conversationsId = entity.conversationsId;
+        userDto.pendingUserIdRequests = entity.pendingUserIdRequests;
         return userDto;
     }
 }

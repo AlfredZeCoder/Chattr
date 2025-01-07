@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Query, Req } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Query, Req } from '@nestjs/common';
 import { ConversationService } from './conversation.service';
 import { AddConversationDto } from 'src/dtos/add-conversation.dto';
 import { RouteInfoPathExtractor } from '@nestjs/core/middleware/route-info-path-extractor';
@@ -16,12 +16,12 @@ export class ConversationController {
     }
 
     @Get('all/:userId')
-    async findAllByUserId(@Param('userId') userId: number) {
+    async findAllByUserId(@Param('userId', ParseIntPipe) userId: number) {
         return await this.conversationService.getAllConversationsByUserId(userId);
     }
 
     @Get('one/:conversationId/:userId')
-    async findOneByUserId(@Param('conversationId') conversationId: number, @Param('userId') userId: number) {
+    async findOneByUserId(@Param('conversationId', ParseIntPipe) conversationId: number, @Param('userId', ParseIntPipe) userId: number) {
         return await this.conversationService.getOneConversationByUserId(conversationId, userId);
     }
 
@@ -31,7 +31,7 @@ export class ConversationController {
     }
 
     @Delete('delete/:conversationId')
-    async deleteConversation(@Param('conversationId') conversationId: number) {
+    async deleteConversation(@Param('conversationId', ParseIntPipe) conversationId: number) {
         return await this.conversationService.deleteConversation(conversationId);
     }
 }
