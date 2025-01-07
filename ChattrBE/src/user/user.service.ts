@@ -135,8 +135,8 @@ export class UserService implements OnModuleInit {
         }
         const conversations = await this.conversationService.getAllConversationsByUserId(userId);
         conversations.map((conversation) => {
-            if (userId == conversation.createrUserId || userId == conversation.askedUserId &&
-                askingUserId == conversation.askedUserId || askingUserId == conversation.createrUserId) {
+            if ((userId == conversation.createrUserId || userId == conversation.askedUserId) &&
+                (askingUserId == conversation.askedUserId || askingUserId == conversation.createrUserId)) {
                 throw new BadRequestException('A conversation already exist');
             }
         });
@@ -179,7 +179,7 @@ export class UserService implements OnModuleInit {
         }
         const conversationDto: AddConversationDto = {
             createrUserId: askingUserId,
-            askedUserId: userId 
+            askedUserId: userId
         };
         await this.deletePendingRequest(userId, askingUserId);
         const newConversation = this.conversationService.createConversation(conversationDto);
