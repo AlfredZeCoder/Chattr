@@ -7,6 +7,8 @@ import { AddUserDto } from 'src/dtos/add-user.dto';
 import { HashingServiceSingleton } from 'src/singletones/hashing.service.singleton';
 import { ConversationService } from 'src/conversation/conversation.service';
 import { ConversationServiceSingleton } from 'src/singletones/conversation.service.singleton';
+import { Conversation } from 'src/entities/conversation.entity';
+import { AddConversationDto } from 'src/dtos/add-conversation.dto';
 
 @Injectable()
 export class UserService implements OnModuleInit {
@@ -171,8 +173,16 @@ export class UserService implements OnModuleInit {
         await this.userRepository.save(user);
     }
 
-    async acceptPendingRequest() {
-        //create conversation
-        //delete pending request
+    async acceptPendingRequest(userId: number, askingUserId: number) {
+        if (!userId || !askingUserId) {
+            throw new BadRequestException('Both userId and askingUserId are required');
+        }
+        const conversationDto: AddConversationDto = {
+            createrUserId: askingUserId,
+            askedUserId: userId 
+        };
+        await this.deletePendingRequest(userId, askingUserId);
+        const newConversation = this.conversationService.createConversation(conversationDto);
+        return newConversation;
     }
 }
