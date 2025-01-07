@@ -41,17 +41,17 @@ export class ConversationService implements OnModuleInit {
 
     async getAllConversationsByUserId(userId: number): Promise<Conversation[]> {
         const user = await this.userService.findOneById(userId);
-        const conversations: Conversation[] = await Promise.all(
+
+        return await Promise.all(
             user.conversationsId.map((conversationId) =>
                 this.getConversationById(conversationId)
             )
         );
-        return conversations;
     }
 
     async getOneConversationByUserId(conversationId: number, userId: number): Promise<Conversation> {
-        const conversation = await this.getConversationById(conversationId);
         await this.userService.findOneById(userId);
+        const conversation = await this.getConversationById(conversationId);
 
         if (conversation.createrUserId == userId || conversation.askedUserId == userId) {
             return conversation;
@@ -61,6 +61,10 @@ export class ConversationService implements OnModuleInit {
     }
 
     async createConversation(conversation: AddConversationDto): Promise<Conversation> {
+        if (!conversation) {
+            throw new BadRequestException('Conversation is required');
+        }
+
         if (!conversation.createrUserId) {
             throw new BadRequestException('Creater id is required');
         }
@@ -76,12 +80,7 @@ export class ConversationService implements OnModuleInit {
         const createrUser = await this.userService.findOneById(conversation.createrUserId);
         const askedUser = await this.userService.findOneById(conversation.askedUserId);
 
-        const conv = new Conversation(
-            conversation.createrUserId,
-            conversation.askedUserId
-        );
-
-        const newConversation = await this.conversationRepository.save(conv)
+        const newConversation = await this.conversationRepository.save(conversation)
             .catch(_ => {
                 throw new BadRequestException('Failed to save conversation');
             });
@@ -93,10 +92,6 @@ export class ConversationService implements OnModuleInit {
     }
 
     async deleteConversation(conversationId: number): Promise<void> {
-        if (!conversationId) {
-            throw new BadRequestException('Conversation id is required');
-        }
-
         const conversation = await this.getConversationById(conversationId);
 
         const createrUser = await this.userService.findOneById(conversation.createrUserId);

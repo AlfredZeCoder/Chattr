@@ -24,6 +24,10 @@ export class UserService implements OnModuleInit {
     }
 
     addUser = async (user: AddUserDto): Promise<User> => {
+        if (!user) {
+            throw new BadRequestException('User is required');
+        }
+
         if (!user.firstName) {
             throw new BadRequestException('First name is required');
         }
@@ -43,9 +47,9 @@ export class UserService implements OnModuleInit {
             throw new BadRequestException('User already exists');
         }
 
-        let newUser = this.userRepository.create(user);
-        newUser.password = await this.hashingService.hashPassword(user.password);
-        newUser = await this.userRepository.save(newUser);
+        user.password = await this.hashingService.hashPassword(user.password);
+
+        const newUser = await this.userRepository.save(user);
         return newUser;
     };
 
@@ -54,7 +58,7 @@ export class UserService implements OnModuleInit {
     };
 
     findOneById = async (id: number): Promise<User | null> => {
-        if (!id || isNaN(id)) {
+        if (!id) {
             throw new BadRequestException('User ID is required');
         }
         const user = await this.userRepository.findOneBy({ id });
@@ -69,14 +73,15 @@ export class UserService implements OnModuleInit {
             throw new BadRequestException('Email is required');
         }
         const user = await this.userRepository.findOneBy({ email });
+
+        if (!user) {
+            throw new BadRequestException('User not found');
+        }
+
         return user;
     };
 
     async addConversationToUser(userId: number, conversationId: number): Promise<void> {
-        if (!userId) {
-            throw new BadRequestException('User ID is required');
-        }
-
         if (!conversationId) {
             throw new BadRequestException('Conversation ID is required');
         }
@@ -85,32 +90,26 @@ export class UserService implements OnModuleInit {
         if (user.conversationsId.includes(conversationId)) {
             throw new BadRequestException('User already part of this conversation');
         }
+
         user.conversationsId.push(conversationId);
         await this.userRepository.save(user);
     }
 
 
     async deleteConversationById(userId: number, conversationId: number): Promise<void> {
-        if (!userId) {
-            throw new BadRequestException('User ID is required');
-        }
-
         if (!conversationId) {
             throw new BadRequestException('Conversation ID is required');
         }
 
         const user = await this.findOneById(userId);
 
-        if (!user.conversationsId.includes(+conversationId)) {
+        if (!user.conversationsId.includes(conversationId)) {
             throw new UnauthorizedException('User is not part of this conversation');
         }
 
-        for (let i = 0; i < user.conversationsId.length; i++) {
-            if (user.conversationsId[i] == conversationId) {
-                user.conversationsId.splice(i, 1);
-                break;
-            }
-        }
+        user.conversationsId = user.conversationsId.filter(
+            (conversation) => conversation !== conversationId
+        );
 
         await this.userRepository.save(user)
             .catch((error) => {
@@ -120,15 +119,10 @@ export class UserService implements OnModuleInit {
 
 
     async addPendingRequest(userId: number, askingUserId: number): Promise<void> {
-        if (userId == askingUserId){
-            throw new BadRequestException('Est tu si seul pour te parler a toi meme')
+        if (userId == askingUserId) {
+            throw new BadRequestException('User cannot add himself as a friend');
         }
-        if (!userId) {
-            throw new BadRequestException('User ID is required');
-        }
-        if (!askingUserId) {
-            throw new BadRequestException('User Request ID is required');
-        }
+
         const user = await this.findOneById(userId);
         await this.findOneById(askingUserId);
 
@@ -140,32 +134,41 @@ export class UserService implements OnModuleInit {
         const conversations = await this.conversationService.getAllConversationsByUserId(userId);
         conversations.map((conversation) => {
             if (userId == conversation.createrUserId || userId == conversation.askedUserId &&
-                askingUserId == conversation.askedUserId || askingUserId == conversation.createrUserId){
-                throw new BadRequestException('A conversation already exist')
+                askingUserId == conversation.askedUserId || askingUserId == conversation.createrUserId) {
+                throw new BadRequestException('A conversation already exist');
             }
-        })
+        });
         user.pendingUserIdRequests.push(askingUserId);
         await this.userRepository.save(user);
     }
 
 
-    async getAllPendingRequestsByUserId(userId : number){
-        const user = await this.findOneById(userId);
-        return user.pendingUserIdRequests
+    async getAllPendingRequestsByUserId(userId: number) {
+        return (await this.findOneById(userId)).pendingUserIdRequests;
     }
 
     async deletePendingRequest(userId: number, askingUserId: number): Promise<void> {
         const user = await this.findOneById(userId);
-        const userPendingRequests = await this.getAllPendingRequestsByUserId(userId)
-        const newPendingRequests = []
-        for (let index = 0; index < userPendingRequests.length; index++) {
-            const pendingRequest = userPendingRequests[index];
-            if (pendingRequest !== askingUserId){
-                newPendingRequests.push(pendingRequest);
-            }
+        const previousLength = user.pendingUserIdRequests.length;
+
+        user.pendingUserIdRequests = user.pendingUserIdRequests.filter(
+            (pendingRequest) => pendingRequest !== askingUserId
+        );
+
+        if (previousLength === user.pendingUserIdRequests.length) {
+            throw new BadRequestException('User does not have a pending request from this user');
         }
-        user.pendingUserIdRequests = newPendingRequests;
-        await this.userRepository.save(user)
+
+        // const userPendingRequests = await this.getAllPendingRequestsByUserId(userId)
+        // const newPendingRequests = []
+        // for (let index = 0; index < userPendingRequests.length; index++) {
+        //     const pendingRequest = userPendingRequests[index];
+        //     if (pendingRequest !== askingUserId){
+        //         newPendingRequests.push(pendingRequest);
+        //     }
+        // }
+        // user.pendingUserIdRequests = newPendingRequests;
+        await this.userRepository.save(user);
     }
 
     async acceptPendingRequest() {
