@@ -1,13 +1,17 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet, RouterLink, Router } from '@angular/router';
 import { AuthService } from './auth/services/auth.service';
 import { CookieService } from 'ngx-cookie-service';
 import { switchMap, tap } from 'rxjs';
+import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
+import { DomSanitizer } from '@angular/platform-browser';
+import { iconSVG } from './utils/iconSVG';
 
 @Component({
   selector: 'app-root',
   imports: [
     RouterOutlet,
+    MatIconModule
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
@@ -17,7 +21,12 @@ export class AppComponent {
     private authService: AuthService,
     private cookieService: CookieService,
     private router: Router
-  ) { }
+  ) {
+    const iconRegistry = inject(MatIconRegistry);
+    const sanitizer = inject(DomSanitizer);
+
+    iconRegistry.addSvgIconLiteral('mail', sanitizer.bypassSecurityTrustHtml(iconSVG.mail));
+  }
 
   ngOnInit() {
     const token = this.cookieService.get('access_token');
@@ -51,5 +60,10 @@ export class AppComponent {
       .then(() => {
         window.location.reload();
       });
+  }
+
+  logout() {
+    this.cookieService.delete('access_token');
+    this.reload();
   }
 }
