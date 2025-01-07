@@ -150,6 +150,9 @@ export class UserService implements OnModuleInit {
     }
 
     async deletePendingRequest(userId: number, askingUserId: number): Promise<void> {
+        if (!askingUserId) {
+            throw new BadRequestException('askingUserId is required');
+        }
         const user = await this.findOneById(userId);
         const previousLength = user.pendingUserIdRequests.length;
 
@@ -160,29 +163,15 @@ export class UserService implements OnModuleInit {
         if (previousLength === user.pendingUserIdRequests.length) {
             throw new BadRequestException('User does not have a pending request from this user');
         }
-
-        // const userPendingRequests = await this.getAllPendingRequestsByUserId(userId)
-        // const newPendingRequests = []
-        // for (let index = 0; index < userPendingRequests.length; index++) {
-        //     const pendingRequest = userPendingRequests[index];
-        //     if (pendingRequest !== askingUserId){
-        //         newPendingRequests.push(pendingRequest);
-        //     }
-        // }
-        // user.pendingUserIdRequests = newPendingRequests;
         await this.userRepository.save(user);
     }
 
     async acceptPendingRequest(userId: number, askingUserId: number) {
-        if (!userId || !askingUserId) {
-            throw new BadRequestException('Both userId and askingUserId are required');
-        }
+        await this.deletePendingRequest(userId, askingUserId);
         const conversationDto: AddConversationDto = {
             createrUserId: askingUserId,
             askedUserId: userId
         };
-        await this.deletePendingRequest(userId, askingUserId);
-        const newConversation = this.conversationService.createConversation(conversationDto);
-        return newConversation;
+        return await this.conversationService.createConversation(conversationDto);
     }
 }
