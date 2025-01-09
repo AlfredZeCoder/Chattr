@@ -1,4 +1,4 @@
-import { Component, Injectable, OnInit } from '@angular/core';
+import { Component, inject, Injectable, OnInit } from '@angular/core';
 import { TruncatePipe } from '../pipes/truncate.pipe';
 import { FormsModule } from '@angular/forms';
 import { DatePipe, NgStyle } from '@angular/common';
@@ -13,6 +13,9 @@ import { UserService } from '../services/user.service';
 import { Message } from '../models/message.interface';
 import { User } from '../models/user.interface';
 import { MessageService } from '../message/message.service';
+import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
+import { DomSanitizer } from '@angular/platform-browser';
+import { iconSVG } from '../utils/iconSVG';
 
 @Component({
   selector: 'app-chat',
@@ -21,7 +24,8 @@ import { MessageService } from '../message/message.service';
     FormsModule,
     NgStyle,
     MessageComponent,
-    DatePipe
+    DatePipe,
+    MatIconModule
   ],
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.css'
@@ -34,7 +38,13 @@ export class ChatComponent implements OnInit {
     private authService: AuthService,
     private userService: UserService,
     private messageService: MessageService
-  ) { }
+  ) {
+    const iconRegistry = inject(MatIconRegistry);
+    const sanitizer = inject(DomSanitizer);
+
+    iconRegistry.addSvgIconLiteral('new-message', sanitizer.bypassSecurityTrustHtml(iconSVG.newMessage));
+    iconRegistry.addSvgIconLiteral('close', sanitizer.bypassSecurityTrustHtml(iconSVG.close));
+  }
 
   ngOnInit() {
     this.getAllConversationProperties$()
@@ -50,13 +60,16 @@ export class ChatComponent implements OnInit {
 
   }
 
-  searchValue: string = '';
+  searchUser: string = '';
+  searchAddUser: string = '';
   hasClickedConversation: boolean = false;
   clickedConversationId!: number;
   inputConversation!: Conversation;
   conversationsProperties: ConversationProperties[] = [];
   yesterday = new Date(new Date().setDate(new Date().getDate() - 1));
   conversations: Conversation[] = [];
+  hasClickedAddingUser: boolean = false;
+  isAddingUser: boolean = false;
 
 
   isYesterday(timestamp: Date) {
@@ -79,12 +92,24 @@ export class ChatComponent implements OnInit {
       );
   }
 
+  addingUser() {
+    this.isAddingUser = !this.isAddingUser;
+    setTimeout(() => {
+      this.hasClickedAddingUser = !this.hasClickedAddingUser;
+      this.isAddingUser = !this.isAddingUser;
+      setTimeout(() => {
+        this.isAddingUser = !this.isAddingUser;
+      }, 1);
+    }, 300);
+  }
+
   async assignConversations() {
     this.conversations = (await this.aggregateConversations())
       .sort((a, b) => {
         return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
       });
   }
+
 
   async aggregateConversations() {
     const conversations: Conversation[] = [];

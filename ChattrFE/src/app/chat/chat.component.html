@@ -1,12 +1,26 @@
 <div class="container">
     <div class="chat-container">
         <div class="conversations-container">
-            <div class="search-bar">
-                <input [(ngModel)]="searchValue" type="text" class="search" placeholder="Search" />
+            <div class="search-bar-container">
+                <div class="search-bar">
+                    @if (!hasClickedAddingUser) {
+                    <input [(ngModel)]="searchUser" type="text"
+                        [ngStyle]="{'width' : isAddingUser ? '0%' : '90%', 'transition' : 'width 0.3s' }" class="search"
+                        placeholder="Search" />
+                    <mat-icon [ngStyle]="{'margin-left' : isAddingUser ? '282px' : null, 'transition' : 'margin 0.3s'}"
+                        class="icon" svgIcon="new-message" (click)="addingUser()"></mat-icon>
+                    } @else {
+                    <input [(ngModel)]="searchAddUser" type="text" class="search"
+                        [ngStyle]="{'width' : !isAddingUser ? '0%' : '90%', 'transition' : 'width 0.3s' }"
+                        placeholder="Enter the email of the user you want to add" />
+                    <mat-icon [ngStyle]="{'margin-left' : !isAddingUser ? '282px' : null, 'transition' : 'margin 0.3s'}"
+                        class="icon" svgIcon="close" (click)="addingUser()"></mat-icon>
+                    }
+                </div>
             </div>
             <div class="conversations">
                 @for (conversation of conversations; track conversation) {
-                @if (conversation.userName.toLowerCase().startsWith(searchValue.toLowerCase())) {
+                @if (conversation.userName.toLowerCase().startsWith(searchUser.toLowerCase())) {
                 <div class="conversation" (click)="getConversation(conversation)"
                     [ngStyle]="{ 'background-color': hasClickedConversation && conversation.id == clickedConversationId ? 'var(--soft-black)' : null }">
                     <div class="name-and-time">

@@ -76,7 +76,11 @@
 
 }
 
-.send-message-container button:hover>svg {
+button .arrow-up {
+    transition: .2s;
+}
+
+.send-message-container button:hover>.arrow-up {
     transition: .2s;
     transform: translateY(-2px);
 

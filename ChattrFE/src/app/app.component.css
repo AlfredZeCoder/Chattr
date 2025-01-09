@@ -1,6 +1,5 @@
 .container {
     background-color: var(--main-black);
-
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -8,8 +7,41 @@
 
 .container .logo-container {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     margin-top: 20px;
+}
+
+.logo-container .burnout {
+    width: 15%;
+}
+
+.logo-container .logo-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.logo-container .options {
+    display: flex;
+    justify-content: flex-end;
+    /* padding-right: 40px; */
+    gap: 30px;
+    align-items: center;
+    width: 15%;
+}
+
+
+.options .icon {
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+}
+
+.options p {
+    margin: 0;
+    margin-right: 40px;
+    cursor: pointer;
+    color: var(--dark-white);
 }
 
 .logo-container .logo {
