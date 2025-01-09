@@ -8,13 +8,17 @@
                         [ngStyle]="{'width' : isAddingUser ? '0%' : '90%', 'transition' : 'width 0.3s' }" class="search"
                         placeholder="Search" />
                     <mat-icon [ngStyle]="{'margin-left' : isAddingUser ? '282px' : null, 'transition' : 'margin 0.3s'}"
-                        class="icon" svgIcon="new-message" (click)="addingUser()"></mat-icon>
+                        class="icon" svgIcon="new-message" (click)="updateUserAddingStatus()"></mat-icon>
                     } @else {
-                    <input [(ngModel)]="searchAddUser" type="text" class="search"
-                        [ngStyle]="{'width' : !isAddingUser ? '0%' : '90%', 'transition' : 'width 0.3s' }"
-                        placeholder="Enter the email of the user you want to add" />
-                    <mat-icon [ngStyle]="{'margin-left' : !isAddingUser ? '282px' : null, 'transition' : 'margin 0.3s'}"
-                        class="icon" svgIcon="close" (click)="addingUser()"></mat-icon>
+                    <input [(ngModel)]="searchAddUser" type="email" class="search"
+                        [ngStyle]="{'width' : !isAddingUser ? '0%' : '90%', 'transition' : 'width 0.3s, box-shadow 0.3s', 'box-shadow': (isEmailInvalid$ | async) ? '0 0 10px rgb(255, 80, 80)' : null }"
+                        placeholder="Enter the email of the user you want to add"
+                        (keyup)="hasAddedUser ? checkEmailValidity() : null"
+                        (keydown.enter)="!searchAddUser ? updateUserAddingStatus() : addUser()" />
+                    <mat-icon
+                        [ngStyle]="{'margin-left' : !isAddingUser ? '282px' : null, 'transition' : 'margin 0.3s, transform 0.3s', 'transform' : searchAddUser ? 'rotate(45deg)' : null}"
+                        class="icon" svgIcon="close"
+                        (click)="!searchAddUser ? updateUserAddingStatus() : addUser()"></mat-icon>
                     }
                 </div>
             </div>

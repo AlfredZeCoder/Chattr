@@ -6,19 +6,21 @@ import { switchMap, tap } from 'rxjs';
 import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { iconSVG } from './utils/iconSVG';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'app-root',
   imports: [
     RouterOutlet,
-    MatIconModule
+    MatIconModule,
+    AsyncPipe
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 export class AppComponent {
   constructor(
-    private authService: AuthService,
+    public authService: AuthService,
     private cookieService: CookieService,
     private router: Router
   ) {

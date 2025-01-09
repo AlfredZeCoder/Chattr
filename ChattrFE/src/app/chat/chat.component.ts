@@ -1,13 +1,13 @@
 import { Component, inject, Injectable, OnInit } from '@angular/core';
 import { TruncatePipe } from '../pipes/truncate.pipe';
-import { FormsModule } from '@angular/forms';
-import { DatePipe, NgStyle } from '@angular/common';
+import { FormGroup, FormsModule } from '@angular/forms';
+import { AsyncPipe, DatePipe, NgStyle } from '@angular/common';
 import { Router } from '@angular/router';
 import { MessageComponent } from "../message/message.component";
 import { ConversationProperties } from '../models/conversation-properties.interface';
 import { ChatService } from './chat.service';
 import { AuthService } from '../auth/services/auth.service';
-import { filter, firstValueFrom, last, map, Observable, switchMap, take, tap } from 'rxjs';
+import { BehaviorSubject, filter, firstValueFrom, Observable, switchMap } from 'rxjs';
 import { Conversation } from '../models/conversation.interface';
 import { UserService } from '../services/user.service';
 import { Message } from '../models/message.interface';
@@ -25,7 +25,8 @@ import { iconSVG } from '../utils/iconSVG';
     NgStyle,
     MessageComponent,
     DatePipe,
-    MatIconModule
+    MatIconModule,
+    AsyncPipe
   ],
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.css'
@@ -70,6 +71,9 @@ export class ChatComponent implements OnInit {
   conversations: Conversation[] = [];
   hasClickedAddingUser: boolean = false;
   isAddingUser: boolean = false;
+  emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
+  isEmailInvalid$ = new BehaviorSubject<boolean>(false);
+  hasAddedUser = false;
 
 
   isYesterday(timestamp: Date) {
@@ -92,7 +96,7 @@ export class ChatComponent implements OnInit {
       );
   }
 
-  addingUser() {
+  updateUserAddingStatus() {
     this.isAddingUser = !this.isAddingUser;
     setTimeout(() => {
       this.hasClickedAddingUser = !this.hasClickedAddingUser;
@@ -101,6 +105,35 @@ export class ChatComponent implements OnInit {
         this.isAddingUser = !this.isAddingUser;
       }, 1);
     }, 300);
+  }
+
+  addUser = () => {
+    this.hasAddedUser = true;
+    this.checkEmailValidity();
+
+    if (!this.isEmailInvalid$.getValue()) {
+      this.chatService.addPendingRequest$(this.searchAddUser, this.authService.user$.getValue().id)
+        .subscribe({
+          next: () => {
+            this.hasAddedUser = false;
+            this.searchAddUser = '';
+            this.updateUserAddingStatus();
+          },
+          error: (error) => {
+            console.error(error);
+          }
+        });
+    }
+
+
+  };
+
+  checkEmailValidity() {
+    if (!this.searchAddUser.match(this.emailRegex)) {
+      this.isEmailInvalid$.next(true);
+    } else {
+      this.isEmailInvalid$.next(false);
+    }
   }
 
   async assignConversations() {

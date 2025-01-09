@@ -23,8 +23,10 @@
       </div>
     </div>
     <div class="options">
+      @if (authService.isLoggedIn$ | async){
       <mat-icon class="icon" svgIcon="mail"></mat-icon>
       <p (click)="logout()">Logout</p>
+      }
     </div>
   </div>
   <router-outlet></router-outlet>

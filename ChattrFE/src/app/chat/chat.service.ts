@@ -2,7 +2,6 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { SERVER_URL } from '../../../env';
 import { ConversationProperties } from '../models/conversation-properties.interface';
-import { Message } from '../models/message.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +18,12 @@ export class ChatService {
     );
   }
 
+  addPendingRequest$(userEmail: string, askingUseId: number) {
+    return this.httpClient.put(
+      SERVER_URL + '/user/add-conversation-request/' + userEmail + '/' + askingUseId,
+      {}
+    );
+  }
 
 }
 
