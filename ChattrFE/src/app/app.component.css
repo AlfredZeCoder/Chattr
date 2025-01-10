@@ -52,5 +52,8 @@
 }
 
 ::ng-deep .menu {
+    background-color: var(--alt-black) !important;
     max-width: none !important;
+    max-height: none !important;
+    border-radius: 15px !important;
 }

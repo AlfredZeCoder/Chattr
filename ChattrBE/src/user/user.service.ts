@@ -45,7 +45,7 @@ export class UserService implements OnModuleInit {
             throw new BadRequestException('Password is required');
         }
 
-        if (await this.findOneByEmail(user.email)) {
+        if (await this.findOneByEmailToAdduser(user.email)) {
             throw new BadRequestException('User already exists');
         }
 
@@ -68,6 +68,15 @@ export class UserService implements OnModuleInit {
             throw new BadRequestException('User not found');
         }
         return user;
+    };
+
+    findOneByEmailToAdduser = async (email: string): Promise<User> => {
+        if (!email) {
+            throw new BadRequestException('Email is required');
+        }
+        const user = await this.userRepository.findOneBy({ email });
+
+        return user || null;
     };
 
     findOneByEmail = async (email: string): Promise<User> => {

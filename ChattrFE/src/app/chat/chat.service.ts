@@ -18,12 +18,7 @@ export class ChatService {
     );
   }
 
-  addPendingRequest$(userEmail: string, askingUseId: number) {
-    return this.httpClient.put(
-      SERVER_URL + '/user/add-conversation-request/' + userEmail + '/' + askingUseId,
-      {}
-    );
-  }
+
 
 }
 

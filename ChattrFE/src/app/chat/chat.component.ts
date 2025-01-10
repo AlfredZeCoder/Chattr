@@ -16,6 +16,7 @@ import { MessageService } from '../message/message.service';
 import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { iconSVG } from '../utils/iconSVG';
+import { PendingRequestService } from '../pending-request/pending-request.service';
 
 @Component({
   selector: 'app-chat',
@@ -36,6 +37,7 @@ export class ChatComponent implements OnInit {
   constructor(
     private router: Router,
     private chatService: ChatService,
+    private pendingRequestService: PendingRequestService,
     private authService: AuthService,
     private userService: UserService,
     private messageService: MessageService
@@ -112,7 +114,7 @@ export class ChatComponent implements OnInit {
     this.checkEmailValidity();
 
     if (!this.isEmailInvalid$.getValue()) {
-      this.chatService.addPendingRequest$(this.searchAddUser, this.authService.user$.getValue().id)
+      this.pendingRequestService.addPendingRequest$(this.searchAddUser, this.authService.user$.getValue().id)
         .subscribe({
           next: () => {
             this.hasAddedUser = false;
