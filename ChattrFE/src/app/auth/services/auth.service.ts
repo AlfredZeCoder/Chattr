@@ -30,7 +30,8 @@ export class AuthService {
       firstName: '',
       lastName: '',
       email: '',
-      conversationsId: []
+      conversationsId: [],
+      pendingUserIdRequests: []
     }
   );
 

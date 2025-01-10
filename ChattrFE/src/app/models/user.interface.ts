@@ -4,5 +4,6 @@ export interface User {
     firstName: string;
     lastName: string;
     conversationsId: number[];
+    pendingUserIdRequests: number[];
 
 }

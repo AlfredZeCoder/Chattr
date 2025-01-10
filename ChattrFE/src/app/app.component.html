@@ -24,8 +24,15 @@
     </div>
     <div class="options">
       @if (authService.isLoggedIn$ | async){
-      <mat-icon class="icon" svgIcon="mail"></mat-icon>
-      <p (click)="logout()">Logout</p>
+      <mat-icon aria-hidden="false" mat-button [mat-menu-trigger-for]="menu"
+        [matBadge]="authService.user$.getValue().pendingUserIdRequests.length" class="icon"
+        [svgIcon]="hasOpenedMail ? 'openedMail' : 'mail'" (click)="changeOpenedMail()">
+      </mat-icon>
+      <mat-menu class="menu" #menu="matMenu">
+        <app-pending-request></app-pending-request>
+      </mat-menu>
+      <p (click)="logout()">Logout
+      </p>
       }
     </div>
   </div>
