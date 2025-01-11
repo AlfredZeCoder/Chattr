@@ -10,14 +10,11 @@
             </div>
             <div class="time"
                 [ngStyle]="{ 'color': hasClickedConversation && conversation.id == clickedConversationId ? 'rgb(218, 220, 224)' : null }">
-                @if (isNow(conversation.timestamp)) {
-
-                } @else if (!isYesterday(conversation.timestamp)) {
+                @if (!isYesterday(conversation.timestamp)) {
                 {{ conversation.timestamp | date: 'shortTime' }}
                 } @else if (isYesterday(conversation.timestamp)) {
                 Yesterday
-                }
-                @else {
+                } @else {
                 {{ conversation.timestamp | date: 'shortDate' }}
                 }
             </div>
@@ -26,13 +23,7 @@
             @if (!conversation.lastMessageIsRead && conversation.lastMessage){
             <div class="unread-dot"></div>
             }
-            @if (conversation.lastMessage === "No messages yet") {
-            <div class="no-messages-yet">
-                {{ conversation.lastMessage }}
-            </div>
-            } @else {
             {{ conversation.lastMessage | truncate: 25 }}
-            }
         </div>
     </div>
     }
