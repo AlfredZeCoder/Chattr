@@ -1,10 +1,9 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, input, OnInit, output } from '@angular/core';
 import { Conversation } from '../../models/conversation.interface';
-import { Router } from '@angular/router';
 import { DatePipe, NgStyle } from '@angular/common';
 import { TruncatePipe } from '../../pipes/truncate.pipe';
 import { AuthService } from '../../auth/services/auth.service';
-import { BehaviorSubject, filter, firstValueFrom, Observable, Subject, switchMap } from 'rxjs';
+import { filter, firstValueFrom, Observable, switchMap } from 'rxjs';
 import { ChatService } from '../chat.service';
 import { ConversationProperties } from '../../models/conversation-properties.interface';
 import { UserService } from '../../services/user.service';
@@ -24,7 +23,7 @@ import { Message } from '../../models/message.interface';
 })
 export class ConversationComponent implements OnInit {
 
-  @Output() conversation = new EventEmitter<Conversation>();
+  conversation = output<Conversation>();
 
   constructor(
     private authService: AuthService,
@@ -59,6 +58,17 @@ export class ConversationComponent implements OnInit {
     const conversationTime = new Date(timestamp).getTime();
 
     return conversationTime >= yesterdayStart.getTime() && conversationTime <= yesterdayEnd.getTime();
+  }
+
+  isNow(timestamp: Date) {
+    const now = Date.now();
+    const tolerance = 5000;
+
+    if (Math.abs(now - new Date(timestamp).getTime()) <= tolerance) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   getAllConversationProperties$() {
@@ -114,16 +124,17 @@ export class ConversationComponent implements OnInit {
             this.messageService.getLastMessageFromConversationId$(conversationProperty.id)
           );
 
+          if (!lastMessage) {
+            conversation.lastMessage = "No messages yet";
+            conversation.lastMessageIsRead = true;
+          }
+
           if (lastMessage) {
             if (lastMessage.timestamp) {
               conversation.timestamp = lastMessage.timestamp;
             }
 
-            if (lastMessage) {
-              conversation.lastMessage = lastMessage.message;
-            } else {
-              conversation.lastMessage = "";
-            }
+            conversation.lastMessage = lastMessage.message;
 
             if (lastMessage.senderId == this.authService.user$.getValue().id) {
               conversation.lastMessageIsRead = true;
@@ -162,7 +173,6 @@ export class ConversationComponent implements OnInit {
 
   getConversation(conversation: Conversation) {
     this.conversation.emit(conversation);
-
     //Not affecting backend
     conversation.lastMessageIsRead = true;
 
