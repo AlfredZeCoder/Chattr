@@ -24,10 +24,9 @@ import { Message } from '../../models/message.interface';
 })
 export class ConversationComponent implements OnInit {
 
-  @Output() outputConversation = new EventEmitter<Conversation>();
+  @Output() conversation = new EventEmitter<Conversation>();
 
   constructor(
-    private router: Router,
     private authService: AuthService,
     private chatService: ChatService,
     private userService: UserService,
@@ -162,9 +161,12 @@ export class ConversationComponent implements OnInit {
 
 
   getConversation(conversation: Conversation) {
+    this.conversation.emit(conversation);
+
     //Not affecting backend
     conversation.lastMessageIsRead = true;
 
-    this.outputConversation.emit(conversation);
+    this.clickedConversationId = conversation.id;
+    this.hasClickedConversation = true;
   }
 }
