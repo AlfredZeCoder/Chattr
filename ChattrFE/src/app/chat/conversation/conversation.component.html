@@ -1,0 +1,31 @@
+<div class="conversations">
+    @for (conversation of conversations; track conversation) {
+    @if (conversation.userName.toLowerCase().startsWith(searchUser.toLowerCase())) {
+    <div class="conversation" (click)="getConversation(conversation)"
+        [ngStyle]="{ 'background-color': hasClickedConversation && conversation.id == clickedConversationId ? 'var(--soft-black)' : null }">
+        <div class="name-and-time">
+            <div class="name"
+                [ngStyle]="{ 'color': hasClickedConversation && conversation.id == clickedConversationId ? 'rgb(218, 220, 224)' : null }">
+                {{ conversation.userName }}
+            </div>
+            <div class="time"
+                [ngStyle]="{ 'color': hasClickedConversation && conversation.id == clickedConversationId ? 'rgb(218, 220, 224)' : null }">
+                @if (!isYesterday(conversation.timestamp)) {
+                {{ conversation.timestamp | date: 'shortTime' }}
+                } @else if (isYesterday(conversation.timestamp)) {
+                Yesterday
+                } @else {
+                {{ conversation.timestamp | date: 'shortDate' }}
+                }
+            </div>
+        </div>
+        <div class="last-message" [ngStyle]="changeLastMessageColor(conversation)">
+            @if (!conversation.lastMessageIsRead && conversation.lastMessage){
+            <div class="unread-dot"></div>
+            }
+            {{ conversation.lastMessage | truncate: 25 }}
+        </div>
+    </div>
+    }
+    }
+</div>
