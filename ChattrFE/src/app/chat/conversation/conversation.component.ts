@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, input, OnInit, output, Output } from '@angular/core';
 import { Conversation } from '../../models/conversation.interface';
 import { Router } from '@angular/router';
 import { DatePipe, NgStyle } from '@angular/common';
@@ -24,7 +24,8 @@ import { Message } from '../../models/message.interface';
 })
 export class ConversationComponent implements OnInit {
 
-  @Output() conversation = new EventEmitter<Conversation>();
+  // @Output() conversation = new EventEmitter<Conversation>();
+  conversation = output<Conversation>();
 
   constructor(
     private authService: AuthService,
@@ -114,15 +115,16 @@ export class ConversationComponent implements OnInit {
             this.messageService.getLastMessageFromConversationId$(conversationProperty.id)
           );
 
+          if (!lastMessage) {
+            conversation.lastMessage = "No messages yet";
+            conversation.lastMessageIsRead = true;
+          }
+
           if (lastMessage) {
+            conversation.lastMessage = lastMessage.message;
+
             if (lastMessage.timestamp) {
               conversation.timestamp = lastMessage.timestamp;
-            }
-
-            if (lastMessage) {
-              conversation.lastMessage = lastMessage.message;
-            } else {
-              conversation.lastMessage = "";
             }
 
             if (lastMessage.senderId == this.authService.user$.getValue().id) {

@@ -23,7 +23,13 @@
             @if (!conversation.lastMessageIsRead && conversation.lastMessage){
             <div class="unread-dot"></div>
             }
+            @if (conversation.lastMessage === "No messages yet") {
+            <div class="no-messages-yet">
+                {{ conversation.lastMessage }}
+            </div>
+            } @else {
             {{ conversation.lastMessage | truncate: 25 }}
+            }
         </div>
     </div>
     }
