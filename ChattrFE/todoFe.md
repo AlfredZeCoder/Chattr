@@ -3,6 +3,4 @@ Peut-être lazyloader les conversations, genre 25 à la foix max (BACKEND AUSSI 
 AddmessageModule - ajout d'un message dans une conversation (avec tous les error catch), verifier si la sender est bel et bien le sender, faire un controller, guarder le controller
 
 
-Ajout d'un user, error handling.
-L'heure de la conversation qui s'affiche quand elle ne devrait pas
 Les réponses JSON de get pending request sont trop volubiles

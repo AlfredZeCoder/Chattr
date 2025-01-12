@@ -88,7 +88,7 @@ export class AppComponent implements OnInit {
   }
 
   logout() {
-    this.cookieService.delete('access_token');
+    this.cookieService.delete('access_token', '/');
     this.reload();
   }
 }
