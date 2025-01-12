@@ -45,7 +45,7 @@ export class UserService implements OnModuleInit {
             throw new BadRequestException('Password is required');
         }
 
-        if (await this.findOneByEmail(user.email)) {
+        if (await this.findOneByEmailToAdduser(user.email)) {
             throw new BadRequestException('User already exists');
         }
 
@@ -68,6 +68,15 @@ export class UserService implements OnModuleInit {
             throw new BadRequestException('User not found');
         }
         return user;
+    };
+
+    findOneByEmailToAdduser = async (email: string): Promise<User> => {
+        if (!email) {
+            throw new BadRequestException('Email is required');
+        }
+        const user = await this.userRepository.findOneBy({ email });
+
+        return user || null;
     };
 
     findOneByEmail = async (email: string): Promise<User> => {
@@ -120,22 +129,22 @@ export class UserService implements OnModuleInit {
     }
 
 
-    async addPendingRequest(userId: number, askingUserId: number): Promise<void> {
-        if (userId == askingUserId) {
+    async addPendingRequest(userEmail: string, askingUserId: number): Promise<void> {
+
+        const user = await this.findOneByEmail(userEmail);
+        await this.findOneById(askingUserId);
+        if (user.id == askingUserId) {
             throw new BadRequestException('User cannot add himself as a friend');
         }
-
-        const user = await this.findOneById(userId);
-        await this.findOneById(askingUserId);
 
         for (let i = 0; i < user.pendingUserIdRequests.length; i++) {
             if (user.pendingUserIdRequests[i] == askingUserId) {
                 throw new BadRequestException('User already has a pending request from this user');
             }
         }
-        const conversations = await this.conversationService.getAllConversationsByUserId(userId);
+        const conversations = await this.conversationService.getAllConversationsByUserId(user.id);
         conversations.map((conversation) => {
-            if ((userId == conversation.createrUserId || userId == conversation.askedUserId) &&
+            if ((user.id == conversation.createrUserId || user.id == conversation.askedUserId) &&
                 (askingUserId == conversation.askedUserId || askingUserId == conversation.createrUserId)) {
                 throw new BadRequestException('A conversation already exist');
             }

@@ -5,6 +5,7 @@
     height: 100%;
 }
 
+
 .container .logo-container {
     display: flex;
     justify-content: space-between;
@@ -25,6 +26,7 @@
     display: flex;
     justify-content: flex-end;
     /* padding-right: 40px; */
+    position: relative;
     gap: 30px;
     align-items: center;
     width: 15%;
@@ -47,4 +49,11 @@
 .logo-container .logo {
     width: 150px;
     cursor: pointer;
+}
+
+::ng-deep .menu {
+    background-color: var(--alt-black) !important;
+    max-width: none !important;
+    max-height: none !important;
+    border-radius: 15px !important;
 }

@@ -1,0 +1,18 @@
+<div class="container">
+    @if(pendingRequests.length === 0){
+    <div class="no-request">
+        <p>No pending requests</p>
+    </div>
+    }
+    @for (pendingRequest of pendingRequests; track $index) {
+    <div class="pending-request">
+        <p>
+            {{ pendingRequest.firstName }} {{ pendingRequest.lastName }} has requested to be your friend
+        </p>
+        <div class="icons">
+            <mat-icon class="add-circle" svgIcon="addCircle" (click)="acceptRequest(pendingRequest.id)"></mat-icon>
+            <mat-icon svgIcon="cancel" (click)="deleteRequest(pendingRequest.id)"></mat-icon>
+        </div>
+    </div>
+    }
+</div>

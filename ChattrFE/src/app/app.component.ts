@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, Component, inject, OnInit, ViewChild } from '@angular/core';
 import { RouterOutlet, RouterLink, Router } from '@angular/router';
 import { AuthService } from './auth/services/auth.service';
 import { CookieService } from 'ngx-cookie-service';
@@ -6,27 +6,42 @@ import { switchMap, tap } from 'rxjs';
 import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { iconSVG } from './utils/iconSVG';
+import { AsyncPipe } from '@angular/common';
+import { MatBadgeModule } from '@angular/material/badge';
+import { PendingRequestComponent } from './pending-request/pending-request.component';
+import { MatExpansionPanel } from '@angular/material/expansion';
+import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 
 @Component({
   selector: 'app-root',
   imports: [
     RouterOutlet,
-    MatIconModule
+    MatIconModule,
+    AsyncPipe,
+    MatBadgeModule,
+    MatMenuModule,
+    PendingRequestComponent
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
+
   constructor(
-    private authService: AuthService,
+    public authService: AuthService,
     private cookieService: CookieService,
-    private router: Router
+    private router: Router,
   ) {
     const iconRegistry = inject(MatIconRegistry);
     const sanitizer = inject(DomSanitizer);
 
     iconRegistry.addSvgIconLiteral('mail', sanitizer.bypassSecurityTrustHtml(iconSVG.mail));
+    iconRegistry.addSvgIconLiteral('openedMail', sanitizer.bypassSecurityTrustHtml(iconSVG.openedMail));
   }
+
+  @ViewChild(MatMenuTrigger) menu!: MatMenuTrigger;
+
+  hasOpenedMail = false;
 
   ngOnInit() {
     const token = this.cookieService.get('access_token');
@@ -53,6 +68,16 @@ export class AppComponent {
           }
         });
     }
+
+  }
+
+
+  changeOpenedMail() {
+    if (!this.hasOpenedMail)
+      this.hasOpenedMail = true;
+
+    this.menu.menuClosed.subscribe(_ => this.hasOpenedMail = false);
+    this.menu.menuOpened.subscribe(_ => this.hasOpenedMail = true);
   }
 
   reload() {
@@ -63,7 +88,7 @@ export class AppComponent {
   }
 
   logout() {
-    this.cookieService.delete('access_token');
+    this.cookieService.delete('access_token', '/');
     this.reload();
   }
 }

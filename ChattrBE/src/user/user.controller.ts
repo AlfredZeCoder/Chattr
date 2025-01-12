@@ -51,15 +51,17 @@ export class UserController implements OnModuleInit {
     }
 
     @Public()
-    @Put('add-conversation-request/:userId/:askingUserId')
-    async addPendingRequest(@Param('userId', ParseIntPipe) userId: number, @Param('askingUserId', ParseIntPipe) askingUserId: number) {
-        return await this.userService.addPendingRequest(userId, askingUserId);
+    @Put('add-conversation-request/:userEmail/:askingUserId')
+    async addPendingRequest(@Param('userEmail') userEmail: string, @Param('askingUserId', ParseIntPipe) askingUserId: number) {
+        return await this.userService.addPendingRequest(userEmail, askingUserId);
     }
+
     @Public()
     @Put('delete-pending-request/:userId/:askingUserId')
     async deletePendingRequest(@Param('userId', ParseIntPipe) userId: number, @Param('askingUserId', ParseIntPipe) askingUserId: number) {
         return await this.userService.deletePendingRequest(userId, askingUserId);
     }
+
     @Public()
     @Put('accept-conversation-request/:userId/:askingUserId')
     async acceptPendingRequest(@Param('userId', ParseIntPipe) userId: number, @Param('askingUserId', ParseIntPipe) askingUserId: number) {

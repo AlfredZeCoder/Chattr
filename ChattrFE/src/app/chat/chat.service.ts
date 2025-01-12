@@ -2,7 +2,6 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { SERVER_URL } from '../../../env';
 import { ConversationProperties } from '../models/conversation-properties.interface';
-import { Message } from '../models/message.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +17,7 @@ export class ChatService {
       SERVER_URL + '/conversation/all/' + userId
     );
   }
+
 
 
 }

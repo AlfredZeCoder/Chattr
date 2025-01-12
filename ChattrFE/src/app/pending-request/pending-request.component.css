@@ -1,0 +1,44 @@
+.container {
+    width: fit-content;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: fit-content;
+    padding: 5px 0;
+    font-size: 15px;
+    color: var(--dark-white);
+}
+
+.container .no-request {
+    padding: 10px;
+
+}
+
+.no-request p {
+    margin: 0;
+}
+
+.container .pending-request {
+    background-color: var(--soft-black);
+    width: 90%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    border-radius: 10px;
+    padding: 5px 10px;
+}
+
+.pending-request p {
+    margin-right: 20px;
+}
+
+.pending-request .icons {
+    display: flex;
+    gap: 10px;
+}
+
+.icons mat-icon {
+    cursor: pointer;
+}
