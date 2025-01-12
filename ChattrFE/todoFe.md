@@ -5,3 +5,4 @@ AddmessageModule - ajout d'un message dans une conversation (avec tous les error
 
 Ajout d'un user, error handling.
 L'heure de la conversation qui s'affiche quand elle ne devrait pas
+Les réponses JSON de get pending request sont trop volubiles
