@@ -10,7 +10,10 @@
             </div>
             <div class="time"
                 [ngStyle]="{ 'color': hasClickedConversation && conversation.id == clickedConversationId ? 'rgb(218, 220, 224)' : null }">
-                @if (!isYesterday(conversation.timestamp)) {
+                @if (conversation.lastMessage === "No messages yet"){
+
+                }
+                @else if (!isYesterday(conversation.timestamp)) {
                 {{ conversation.timestamp | date: 'shortTime' }}
                 } @else if (isYesterday(conversation.timestamp)) {
                 Yesterday
