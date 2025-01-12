@@ -4,7 +4,7 @@ import { AsyncPipe, NgStyle } from '@angular/common';
 import { Router } from '@angular/router';
 import { MessageComponent } from "../message/message.component";
 import { AuthService } from '../auth/services/auth.service';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, catchError, of } from 'rxjs';
 import { Conversation } from '../models/conversation.interface';
 import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -71,20 +71,20 @@ export class ChatComponent implements OnInit {
 
     if (!this.isEmailInvalid$.getValue()) {
       this.pendingRequestService.addPendingRequest$(this.searchAddUser, this.authService.user$.getValue().id)
+        .pipe(
+          catchError(err => of(err))
+        )
         .subscribe({
-          next: () => {
-            this.hasAddedUser = false;
-            this.searchAddUser = '';
-            this.updateUserAddingStatus();
-          },
-          error: () => {
-            this.hasAddedUser = false;
-            this.searchAddUser = '';
-            this.updateUserAddingStatus();
-          },
+          next: _ => this.resetAddUser()
         });
     }
   };
+
+  resetAddUser() {
+    this.hasAddedUser = false;
+    this.searchAddUser = '';
+    this.updateUserAddingStatus();
+  }
 
   getConversation(conversation: Conversation) {
     this.hasClickedConversation = true;
