@@ -77,9 +77,11 @@ export class ChatComponent implements OnInit {
             this.searchAddUser = '';
             this.updateUserAddingStatus();
           },
-          error: (error) => {
-            console.error(error);
-          }
+          error: () => {
+            this.hasAddedUser = false;
+            this.searchAddUser = '';
+            this.updateUserAddingStatus();
+          },
         });
     }
   };

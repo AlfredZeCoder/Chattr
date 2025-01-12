@@ -13,7 +13,7 @@ export class PendingRequestService {
   ) { }
 
   addPendingRequest$(userEmail: string, askingUseId: number) {
-    return this.httpClient.put(
+    return this.httpClient.put<Conversation>(
       SERVER_URL + '/user/add-conversation-request/' + userEmail + '/' + askingUseId,
       {}
     );
