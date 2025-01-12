@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { AsyncPipe, NgStyle } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { AuthService } from '../auth/services/auth.service';
+import { AuthService } from '../../auth/services/auth.service';
 import { BehaviorSubject, map, switchMap, tap } from 'rxjs';
 import { Router } from '@angular/router';
 

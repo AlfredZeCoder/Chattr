@@ -1,12 +1,12 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { UserService } from '../services/user.service';
+import { UserService } from '../shared/services/user.service';
 import { AuthService } from '../auth/services/auth.service';
 import { filter, from, map, mergeMap, Observable, switchMap, tap } from 'rxjs';
-import { User } from '../models/user.interface';
+import { User } from '../shared/models/user.interface';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIcon, MatIconModule, MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
-import { iconSVG } from '../utils/iconSVG';
+import { iconSVG } from '../shared/utils/iconSVG';
 import { NgStyle } from '@angular/common';
 import { PendingRequestService } from './pending-request.service';
 

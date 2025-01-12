@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Message } from '../models/message.interface';
+import { Message } from '../../shared/models/message.interface';
 import { CookieService } from 'ngx-cookie-service';
-import { SERVER_URL } from '../../../env';
+import { SERVER_URL } from '../../../../env';
 
 @Injectable({
   providedIn: 'root'

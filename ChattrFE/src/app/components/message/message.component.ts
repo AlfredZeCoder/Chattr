@@ -1,13 +1,13 @@
 import { NgStyle } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, inject, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Conversation } from '../models/conversation.interface';
-import { Message } from '../models/message.interface';
+import { Conversation } from '../../shared/models/conversation.interface';
+import { Message } from '../../shared/models/message.interface';
 import { MessageService } from './message.service';
-import { AuthService } from '../auth/services/auth.service';
+import { AuthService } from '../../auth/services/auth.service';
 import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
-import { iconSVG } from '../utils/iconSVG';
+import { iconSVG } from '../../shared/utils/iconSVG';
 @Component({
   selector: 'app-message',
   imports: [

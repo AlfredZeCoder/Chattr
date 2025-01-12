@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
-import { MessageComponent } from './message/message.component';
-import { ChatGuard } from './auth/guards/chat.guard';
-import { IsLoggedInGuard } from './auth/guards/is-logged-in.guard';
+import { MessageComponent } from './components/message/message.component';
+import { ChatGuard } from './shared/guards/chat.guard';
+import { authGuard } from './auth/guards/auth.guard';
 
 export const routes: Routes = [
     {
@@ -30,15 +30,15 @@ export const routes: Routes = [
     },
     {
         path: "login",
-        loadComponent: () => import("../app/login-page/login-page.component")
+        loadComponent: () => import("./components/login-page/login-page.component")
             .then(c => c.LoginPageComponent),
-        canActivate: [IsLoggedInGuard]
+        canActivate: [authGuard]
     },
     {
         path: "register",
-        loadComponent: () => import("../app/register/register.component")
+        loadComponent: () => import("./components/register/register.component")
             .then(c => c.RegisterComponent),
-        canActivate: [IsLoggedInGuard]
+        canActivate: [authGuard]
     },
     {
         path: "**",
