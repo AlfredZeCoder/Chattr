@@ -23,8 +23,6 @@ export class AuthService implements OnModuleInit {
         private jwtService: JwtService
     ) {
     }
-
-    //
     onModuleInit() {
         this.userService = UserServiceSingleton.getInstance();
     }
