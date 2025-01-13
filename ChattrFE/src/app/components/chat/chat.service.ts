@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { SERVER_URL } from '../../../env';
-import { ConversationProperties } from '../shared/models/conversation-properties.interface';
+import { SERVER_URL } from '../../../../env';
+import { ConversationProperties } from '../../shared/models/conversation-properties.interface';
 
 @Injectable({
   providedIn: 'root'

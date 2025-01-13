@@ -3,9 +3,8 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { AsyncPipe, NgStyle } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { BehaviorSubject, switchMap, tap } from 'rxjs';
-import { AuthService } from '../../auth/services/auth.service';
+import { AuthService } from '../../shared/auth/services/auth.service';
 import { AddUser } from '../../shared/models/add-user.interface';
-import { ErrorMessage } from '../../shared/models/error-message.interface';
 
 @Component({
   selector: 'app-register',

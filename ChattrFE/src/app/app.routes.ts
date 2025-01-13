@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { MessageComponent } from './components/message/message.component';
 import { ChatGuard } from './shared/guards/chat.guard';
-import { authGuard } from './auth/guards/auth.guard';
+import { authGuard } from './shared/auth/guards/auth.guard';
 
 export const routes: Routes = [
     {
@@ -12,7 +12,7 @@ export const routes: Routes = [
     },
     {
         path: "chat",
-        loadComponent: () => import("./chat/chat.component")
+        loadComponent: () => import("./components/chat/chat.component")
             .then(c => c.ChatComponent),
         children: [
             {

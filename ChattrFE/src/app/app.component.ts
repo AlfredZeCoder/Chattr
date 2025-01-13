@@ -1,6 +1,6 @@
-import { AfterViewChecked, AfterViewInit, Component, inject, OnInit, ViewChild } from '@angular/core';
-import { RouterOutlet, RouterLink, Router } from '@angular/router';
-import { AuthService } from './auth/services/auth.service';
+import { Component, inject, OnInit, ViewChild } from '@angular/core';
+import { RouterOutlet, Router } from '@angular/router';
+import { AuthService } from './shared/auth/services/auth.service';
 import { CookieService } from 'ngx-cookie-service';
 import { switchMap, tap } from 'rxjs';
 import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
@@ -8,8 +8,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { iconSVG } from './shared/utils/iconSVG';
 import { AsyncPipe } from '@angular/common';
 import { MatBadgeModule } from '@angular/material/badge';
-import { PendingRequestComponent } from './pending-request/pending-request.component';
-import { MatExpansionPanel } from '@angular/material/expansion';
+import { PendingRequestComponent } from './components/pending-request/pending-request.component';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 
 @Component({
