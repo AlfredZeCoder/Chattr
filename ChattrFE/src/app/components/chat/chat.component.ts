@@ -2,13 +2,13 @@ import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AsyncPipe, NgStyle } from '@angular/common';
 import { Router } from '@angular/router';
-import { MessageComponent } from "../message/message.component";
-import { AuthService } from '../auth/services/auth.service';
+import { MessageComponent } from '../message/message.component';
+import { AuthService } from '../../shared/auth/services/auth.service';
 import { BehaviorSubject, catchError, of } from 'rxjs';
-import { Conversation } from '../models/conversation.interface';
+import { Conversation } from '../../shared/models/conversation.interface';
 import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
-import { iconSVG } from '../utils/iconSVG';
+import { iconSVG } from '../../shared/utils/iconSVG';
 import { PendingRequestService } from '../pending-request/pending-request.service';
 import { ConversationComponent } from './conversation/conversation.component';
 

@@ -1,16 +1,15 @@
-import { Component, EventEmitter, input, OnInit, output, Output } from '@angular/core';
-import { Conversation } from '../../models/conversation.interface';
-import { Router } from '@angular/router';
+import { Component, OnInit, output } from '@angular/core';
+import { Conversation } from '../../../shared/models/conversation.interface';
 import { DatePipe, NgStyle } from '@angular/common';
-import { TruncatePipe } from '../../pipes/truncate.pipe';
-import { AuthService } from '../../auth/services/auth.service';
-import { BehaviorSubject, filter, firstValueFrom, Observable, Subject, switchMap } from 'rxjs';
+import { TruncatePipe } from '../../../shared/pipes/truncate.pipe';
+import { AuthService } from '../../../shared/auth/services/auth.service';
+import { filter, firstValueFrom, Observable, switchMap } from 'rxjs';
 import { ChatService } from '../chat.service';
-import { ConversationProperties } from '../../models/conversation-properties.interface';
-import { UserService } from '../../services/user.service';
-import { MessageService } from '../../message/message.service';
-import { User } from '../../models/user.interface';
-import { Message } from '../../models/message.interface';
+import { ConversationProperties } from '../../../shared/models/conversation-properties.interface';
+import { UserService } from '../../../shared/services/user.service';
+import { MessageService } from '../../../components/message/message.service';
+import { User } from '../../../shared/models/user.interface';
+import { Message } from '../../../shared/models/message.interface';
 
 @Component({
   selector: 'app-conversation',

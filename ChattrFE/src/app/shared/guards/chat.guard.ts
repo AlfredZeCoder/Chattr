@@ -1,6 +1,6 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import { AuthService } from '../services/auth.service';
+import { AuthService } from '../../shared/auth/services/auth.service';
 import { filter, firstValueFrom } from 'rxjs';
 
 export const ChatGuard: CanActivateFn = async (route, state) => {
