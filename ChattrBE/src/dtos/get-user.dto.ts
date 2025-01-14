@@ -1,5 +1,4 @@
 import { User } from "src/entities/user.entity";
-import { Role } from "src/models/role.enum";
 
 export class GetUserDto {
     id: number;
