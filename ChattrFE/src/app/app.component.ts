@@ -45,12 +45,13 @@ export class AppComponent implements OnInit {
   hasOpenedMail = false;
 
   ngOnInit() {
-    setTimeout(() => {
-      this.webSocketService.emmit({ message: 'Hello from Angular' });
-    }, 1000);
+    this.webSocketService.joinRoom("Room-1");
+    this.webSocketService.sendMessageToRoom("Room-1", "Hello, Room-1!");
+    this.webSocketService.onEvent("message", (data) => {
+      console.log(data);
+    });
 
 
-    this.webSocketService.get().subscribe(console.log);
     const token = this.cookieService.get('access_token');
     if (!token) {
       this.authService.isLoggedIn$.next(false);

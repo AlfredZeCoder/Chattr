@@ -1,33 +1,42 @@
-import { MessageBody, OnGatewayConnection, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
-import { MessageService } from './message.service';
-import { ServerToClientEvents } from 'src/models/server-to-client.interface';
-import { ClientToServerEvents } from 'src/models/client-to-server.interface';
-import { Logger } from '@nestjs/common';
-import { Message } from 'src/models/message.interface';
-import { User } from 'src/models/user.interface';
 
 @WebSocketGateway({
   namespace: 'messages-gateway',
 })
-export class MessageGateway implements OnGatewayConnection {
+export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   constructor(
-    private messageService: MessageService
   ) { }
 
-  handleConnection(client: any, ...args: any[]) {
-    this.messageService.emmitMessage(client, 'Hello from INIt');
+  @WebSocketServer()
+  server: Server;
+
+  handleConnection(client: Socket) {
+    console.log(`Client connected: ${client.id}`);
   }
 
-  private logger = new Logger('MessageGateway');
-
-  @SubscribeMessage('chat')
-  handleTest(socket: Socket, payload: string) {
-    this.logger.log(`Received message: ${payload}`);
-    this.messageService.emmitMessage(socket, payload);
-    setTimeout(() => {
-      this.messageService.emmitMessage(socket, 'Hello from');
-    }, 3000);
+  handleDisconnect(client: Socket) {
+    console.log(`Client disconnected: ${client.id}`);
   }
+
+  @SubscribeMessage('joinRoom')
+  handleJoinRoom(client: Socket, room: string): void {
+    client.join(room);
+    console.log(`Client ${client.id} joined room: ${room}`);
+    this.server.to(room).emit('roomNotification', `User ${client.id} joined the room.`);
+  }
+
+  @SubscribeMessage('leaveRoom')
+  handleLeaveRoom(client: Socket, room: string): void {
+    client.leave(room);
+    console.log(`Client ${client.id} left room: ${room}`);
+    this.server.to(room).emit('roomNotification', `User ${client.id} left the room.`);
+  }
+
+  @SubscribeMessage('sendMessageToRoom')
+  handleMessageToRoom(client: Socket, payload: { room: string; message: string; }): void {
+    this.server.to(payload.room).emit('message', payload.message);
+  }
+
 }
