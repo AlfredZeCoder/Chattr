@@ -2,12 +2,15 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppInitializerService } from './app-initializer.service';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const appInitializerService = app.select(AppModule).get(AppInitializerService);
   await appInitializerService.initialize();
+
+  const configService = app.get(ConfigService);
 
   const config = new DocumentBuilder()
     .setTitle('Chattr API')
@@ -26,7 +29,8 @@ async function bootstrap() {
     optionsSuccessStatus: 204,
   });
 
-  await app.listen(3000);
+  await app.listen(configService.get('APP_PORT'));
+  console.log(`Application is running on: ${await app.getUrl()}`);
 }
 
 
