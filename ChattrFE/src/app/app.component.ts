@@ -10,6 +10,7 @@ import { AsyncPipe } from '@angular/common';
 import { MatBadgeModule } from '@angular/material/badge';
 import { PendingRequestComponent } from './components/pending-request/pending-request.component';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
+import { WebsocketService } from './shared/services/websocket.service';
 
 @Component({
   selector: 'app-root',
@@ -30,6 +31,7 @@ export class AppComponent implements OnInit {
     public authService: AuthService,
     private cookieService: CookieService,
     private router: Router,
+    private webSocketService: WebsocketService
   ) {
     const iconRegistry = inject(MatIconRegistry);
     const sanitizer = inject(DomSanitizer);
@@ -43,6 +45,12 @@ export class AppComponent implements OnInit {
   hasOpenedMail = false;
 
   ngOnInit() {
+    setTimeout(() => {
+      this.webSocketService.emmit({ message: 'Hello from Angular' });
+    }, 1000);
+
+
+    this.webSocketService.get().subscribe(console.log);
     const token = this.cookieService.get('access_token');
     if (!token) {
       this.authService.isLoggedIn$.next(false);
