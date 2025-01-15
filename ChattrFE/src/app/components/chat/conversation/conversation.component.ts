@@ -4,7 +4,7 @@ import { DatePipe, NgStyle } from '@angular/common';
 import { TruncatePipe } from '../../../shared/pipes/truncate.pipe';
 import { AuthService } from '../../../shared/auth/services/auth.service';
 import { filter, firstValueFrom, Observable, switchMap } from 'rxjs';
-import { ChatService } from '../chat.service';
+import { ChatService } from '../services/chat.service';
 import { ConversationProperties } from '../../../shared/models/conversation-properties.interface';
 import { UserService } from '../../../shared/services/user.service';
 import { MessageService } from '../../../components/message/message.service';

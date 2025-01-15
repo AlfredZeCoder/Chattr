@@ -10,7 +10,6 @@ import { AsyncPipe } from '@angular/common';
 import { MatBadgeModule } from '@angular/material/badge';
 import { PendingRequestComponent } from './components/pending-request/pending-request.component';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { WebsocketService } from './shared/services/websocket.service';
 
 @Component({
   selector: 'app-root',
