@@ -8,6 +8,7 @@ import { AuthService } from '../../shared/auth/services/auth.service';
 import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { iconSVG } from '../../shared/utils/iconSVG';
+import { MessageWebSocketsService } from './services/message-websocket.service';
 @Component({
   selector: 'app-message',
   imports: [
@@ -23,6 +24,7 @@ export class MessageComponent implements OnInit, AfterViewInit, OnChanges {
   constructor(
     private messageService: MessageService,
     private authService: AuthService,
+    private messageWebSocketsService: MessageWebSocketsService
   ) {
     const iconRegistry = inject(MatIconRegistry);
     const sanitizer = inject(DomSanitizer);
@@ -33,9 +35,16 @@ export class MessageComponent implements OnInit, AfterViewInit, OnChanges {
 
   @Input() conversation!: Conversation;
 
+  lastConversationId!: number;
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['conversation']) {
+      if (this.lastConversationId) {
+        this.messageWebSocketsService.leaveRoom(this.lastConversationId.toString());
+        this.messageWebSocketsService.joinRoom(this.conversation.id.toString());
+      }
       this.getMessagesFromConversation(this.conversation.id);
+      this.lastConversationId = this.conversation.id;
     }
   }
 
@@ -47,7 +56,11 @@ export class MessageComponent implements OnInit, AfterViewInit, OnChanges {
         }
       );
     this.getMessagesFromConversation(this.conversation.id);
-
+    this.lastConversationId = this.conversation.id;
+    this.messageWebSocketsService.joinRoom(this.conversation.id.toString());
+    this.messageWebSocketsService.onEvent('roomNotification', (data: any) => {
+      console.log(data);
+    });
   }
 
   getMessagesFromConversation(conversationId: number) {

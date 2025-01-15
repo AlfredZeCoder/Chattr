@@ -29,7 +29,7 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect 
 
     client.join(roomName);
     // console.log(`Client ${client.id} joined room: Room-${room}`);
-    this.server.to(roomName).emit('roomNotification', `User ${client.id} joined the room.`);
+    this.server.to(roomName).emit('roomNotification', `User ${client.id} joined the room ${roomName}.`);
   }
 
   @SubscribeMessage('leaveRoom')

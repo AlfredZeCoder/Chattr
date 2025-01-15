@@ -4,13 +4,15 @@ import { io, Socket } from 'socket.io-client';
 @Injectable(
   { providedIn: 'root' }
 )
-export class WebsocketService {
+export class MessageWebSocketsService {
   private socket!: Socket;
 
   constructor() {
     this.socket = io('http://localhost:3001/messages-gateway', { transports: ['websocket'] });
   }
 
+
+  // MAKE ALL THESE OBSERVABLES
   joinRoom(room: string) {
     this.socket.emit('joinRoom', room);
   }
