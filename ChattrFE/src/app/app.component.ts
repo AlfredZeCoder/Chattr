@@ -45,9 +45,9 @@ export class AppComponent implements OnInit {
   hasOpenedMail = false;
 
   ngOnInit() {
-    this.webSocketService.joinRoom("Room-1");
-    this.webSocketService.sendMessageToRoom("Room-1", "Hello, Room-1!");
-    this.webSocketService.onEvent("message", (data) => {
+    this.webSocketService.joinRoom("1");
+    this.webSocketService.sendMessageToRoom("1", "Hello, Room-1!");
+    this.webSocketService.onEvent("message", (data: string) => {
       console.log(data);
     });
 
