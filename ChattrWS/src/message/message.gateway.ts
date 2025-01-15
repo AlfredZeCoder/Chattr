@@ -1,7 +1,9 @@
-import { BadRequestException, Param } from '@nestjs/common';
+import { BadRequestException, Param, UseGuards } from '@nestjs/common';
 import { MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import { MessageService } from './message.service';
+import { Message } from 'src/models/message.interface';
+import { RoomGuard } from 'src/guards/room.guard';
 
 @WebSocketGateway({
   namespace: 'messages-gateway',
@@ -23,32 +25,34 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect 
     // console.log(`Client disconnected: ${client.id}`);
   }
 
-  @SubscribeMessage('joinRoom')
-  handleJoinRoom(client: Socket, room: string): void {
+  @SubscribeMessage('joinMessageRoom')
+  handleJoinMessageRoom(client: Socket, room: string): void {
     const roomName = this.generateRoomName(room);
-
     client.join(roomName);
-    // console.log(`Client ${client.id} joined room: Room-${room}`);
     this.server.to(roomName).emit('roomNotification', `User ${client.id} joined the room ${roomName}.`);
   }
 
-  @SubscribeMessage('leaveRoom')
-  handleLeaveRoom(client: Socket, room: string): void {
+  @SubscribeMessage('leaveMessageRoom')
+  handleLeaveMessageRoom(client: Socket, room: string): void {
+
     client.leave(room);
     // console.log(`Client ${client.id} left room: ${room}`);
     this.server.to(room).emit('roomNotification', `User ${client.id} left the room.`);
   }
 
-  @SubscribeMessage('sendMessageToRoom')
-  async handleMessageToRoom(client: Socket, payload: { room: string; message: string; }) {
+  @UseGuards(RoomGuard)
+  @SubscribeMessage('sendMessageToMessageRoom')
+  async handleMessageToMessageRoom(client: Socket, message: Message) {
 
-    const roomName = this.generateRoomName(payload.room);
-
-    const sockets = await this.server.in(roomName).fetchSockets();
-    if (!sockets.some(socket => socket.id === client.id)) {
-      return;
-    }
-    this.server.to(roomName).emit('message', `User ${client.id} sent a message to room ${roomName}: ${payload.message}`);
+    // const roomName = this.generateRoomName(message.room);
+    // const sockets = await this.server.in(roomName).fetchSockets();
+    // console.log(sockets);
+    // if (!sockets.some(socket => socket.id === client.id)) {
+    //   return;
+    // }
+    // console.log(args[0][1]);
+    // console.log("Message: " + args[0][1]);
+    // this.server.to(roomName).emit('message', args[0][1]);
   }
 
   generateRoomName(room: string): string {

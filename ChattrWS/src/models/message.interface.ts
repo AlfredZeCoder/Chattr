@@ -1,11 +1,11 @@
 export interface Message {
     id: number;
     conversationId: number;
-    roomName: string;
     message: string;
     senderId: number;
     timestamp: Date;
     isRead: boolean;
+    roomName: string;
 }
 
 

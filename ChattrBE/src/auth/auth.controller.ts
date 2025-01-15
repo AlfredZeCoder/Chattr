@@ -1,4 +1,4 @@
-import { Body, Controller, OnModuleInit, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, OnModuleInit, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LogInDto } from 'src/dtos/login.dto';
 import { AccessTokenPayloadParser, IAccessTokenPayload, IJwt } from 'src/models/access-token-payload';
@@ -10,6 +10,7 @@ import { AuthGuard } from './guards/auth.guard';
 import { Public } from 'src/decorators/public.decorator';
 import { UserService } from 'src/user/user.service';
 import { UserServiceSingleton } from 'src/singletones/user.service.singleton';
+import { HashingService } from './hashing.service';
 
 @Controller('auth')
 @UseGuards(AuthGuard)
@@ -20,6 +21,7 @@ export class AuthController implements OnModuleInit {
     constructor(
         private authService: AuthService,
         private jwtService: JwtService,
+        private hashingService: HashingService,
     ) {
     }
     onModuleInit() {
@@ -76,5 +78,12 @@ export class AuthController implements OnModuleInit {
             ),
         };
 
+    }
+
+    @Get('get-room-hash/:id')
+    async getRoomHash(@Param('id', ParseIntPipe) id: number) {
+        return {
+            roomHash: this.hashingService.generateRoomHash(id)
+        };
     }
 }
