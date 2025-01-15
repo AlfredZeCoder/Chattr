@@ -31,7 +31,6 @@ export class AppComponent implements OnInit {
     public authService: AuthService,
     private cookieService: CookieService,
     private router: Router,
-    private webSocketService: WebsocketService
   ) {
     const iconRegistry = inject(MatIconRegistry);
     const sanitizer = inject(DomSanitizer);
@@ -45,13 +44,6 @@ export class AppComponent implements OnInit {
   hasOpenedMail = false;
 
   ngOnInit() {
-    this.webSocketService.joinRoom("1");
-    this.webSocketService.sendMessageToRoom("1", "Hello, Room-1!");
-    this.webSocketService.onEvent("message", (data: string) => {
-      console.log(data);
-    });
-
-
     const token = this.cookieService.get('access_token');
     if (!token) {
       this.authService.isLoggedIn$.next(false);

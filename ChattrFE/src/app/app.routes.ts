@@ -17,8 +17,8 @@ export const routes: Routes = [
         children: [
             {
                 path: "conversation",
-                component: MessageComponent,
-
+                loadComponent: () => import("./components/chat/conversation/conversation.component")
+                    .then(c => c.ConversationComponent)
             },
             {
                 path: "**",

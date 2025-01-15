@@ -61,6 +61,14 @@ export class ConversationComponent implements OnInit {
     return conversationTime >= yesterdayStart.getTime() && conversationTime <= yesterdayEnd.getTime();
   }
 
+  isToday(timestamp: Date) {
+    const todayStart = new Date(new Date().setHours(0, 0, 0, 0));
+    const todayEnd = new Date(new Date().setHours(23, 59, 59, 999));
+    const conversationTime = new Date(timestamp).getTime();
+
+    return conversationTime >= todayStart.getTime() && conversationTime <= todayEnd.getTime();
+  }
+
   getAllConversationProperties$() {
     return this.authService.user$
       .pipe(
