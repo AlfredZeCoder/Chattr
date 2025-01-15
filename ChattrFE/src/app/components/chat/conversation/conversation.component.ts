@@ -7,7 +7,7 @@ import { filter, firstValueFrom, Observable, switchMap } from 'rxjs';
 import { ChatService } from '../services/chat.service';
 import { ConversationProperties } from '../../../shared/models/conversation-properties.interface';
 import { UserService } from '../../../shared/services/user.service';
-import { MessageService } from '../../../components/message/message.service';
+import { MessageService } from '../../message/services/message.service';
 import { User } from '../../../shared/models/user.interface';
 import { Message } from '../../../shared/models/message.interface';
 
