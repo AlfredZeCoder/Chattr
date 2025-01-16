@@ -1,9 +1,9 @@
 import { BadRequestException, Param, UseGuards } from '@nestjs/common';
 import { MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
-import { MessageService } from './message.service';
 import { Message } from 'src/models/message.interface';
 import { RoomGuard } from 'src/guards/room.guard';
+import { Room } from 'src/models/room.interface';
 
 @WebSocketGateway({
   namespace: 'messages-gateway',
@@ -11,7 +11,6 @@ import { RoomGuard } from 'src/guards/room.guard';
 export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   constructor(
-    private messageService: MessageService
   ) { }
 
   @WebSocketServer()
@@ -26,10 +25,10 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect 
   }
 
   @SubscribeMessage('joinMessageRoom')
-  handleJoinMessageRoom(client: Socket, room: string): void {
-    const roomName = this.generateRoomName(room);
-    client.join(roomName);
-    this.server.to(roomName).emit('roomNotification', `User ${client.id} joined the room ${roomName}.`);
+  handleJoinMessageRoom(client: Socket, room: Room): void {
+    client.join(room.roomHash);
+    console.log(`Client ${client.id} joined room: ${room.roomHash}`);
+    this.server.to(room.roomHash).emit('roomNotification', `User ${client.id} joined the room ${room.roomHash}.`);
   }
 
   @SubscribeMessage('leaveMessageRoom')
@@ -40,9 +39,11 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect 
     this.server.to(room).emit('roomNotification', `User ${client.id} left the room.`);
   }
 
-  @UseGuards(RoomGuard)
+  // @UseGuards(RoomGuard)
   @SubscribeMessage('sendMessageToMessageRoom')
-  async handleMessageToMessageRoom(client: Socket, message: Message) {
+  async handleMessageToMessageRoom(client: Socket, data: { room: Room, message: Message; }) {
+    console.log("Room: " + data.room.roomHash);
+    console.log("Message: " + data.message.message);
 
     // const roomName = this.generateRoomName(message.room);
     // const sockets = await this.server.in(roomName).fetchSockets();
@@ -55,12 +56,5 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect 
     // this.server.to(roomName).emit('message', args[0][1]);
   }
 
-  generateRoomName(room: string): string {
-    if (isNaN(parseInt(room, 10))) {
-      return;
-    }
-
-    return this.messageService.generateRoomName(parseInt(room, 10));
-  }
-
 }
+

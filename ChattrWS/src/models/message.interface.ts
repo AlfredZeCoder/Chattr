@@ -5,7 +5,6 @@ export interface Message {
     senderId: number;
     timestamp: Date;
     isRead: boolean;
-    roomName: string;
 }
 
 

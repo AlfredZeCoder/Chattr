@@ -3,10 +3,10 @@ import { io, Socket } from 'socket.io-client';
 import { SERVER_URL, WS_URL } from '../../../../../env';
 import { MessageService } from './message.service';
 import { HttpClient } from '@angular/common/http';
+import { Room } from '../models/room.interface';
+import { Message } from '../../../shared/models/message.interface';
 
-@Injectable(
-  { providedIn: 'root' }
-)
+@Injectable()
 export class MessageWebSocketsService {
   private socket!: Socket;
 
@@ -18,22 +18,21 @@ export class MessageWebSocketsService {
 
 
   getRoomHash(conversationId: number) {
-    return this.httpClient.get<{ roomHash: string; }>(
+    return this.httpClient.get<Room>(
       `${SERVER_URL}/message/get-room-hash/${conversationId}`
     );
   }
 
-  // MAKE ALL THESE OBSERVABLES
-  joinRoom(room: string) {
-    this.socket.emit('joinRoom', room);
+  joinRoom(room: Room) {
+    this.socket.emit('joinMessageRoom', room);
   }
 
-  leaveRoom(room: string) {
+  leaveRoom(room: Room) {
     this.socket.emit('leaveRoom', room);
   }
 
-  sendMessageToRoom(room: string, message: string) {
-    this.socket.emit('sendMessageToRoom', { room, message });
+  sendMessageToRoom(room: Room, message: Message) {
+    this.socket.emit('sendMessageToMessageRoom', { room, message });
   }
 
   onEvent(event: string, callback: (data: any) => void) {

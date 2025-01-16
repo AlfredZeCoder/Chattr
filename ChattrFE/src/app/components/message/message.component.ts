@@ -9,6 +9,8 @@ import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { iconSVG } from '../../shared/utils/iconSVG';
 import { MessageWebSocketsService } from './services/message-websocket.service';
+import { BehaviorSubject, switchMap, take } from 'rxjs';
+import { Room } from './models/room.interface';
 @Component({
   selector: 'app-message',
   imports: [
@@ -16,6 +18,7 @@ import { MessageWebSocketsService } from './services/message-websocket.service';
     FormsModule,
     MatIconModule
   ],
+  providers: [MessageWebSocketsService],
   templateUrl: './message.component.html',
   styleUrl: './message.component.css',
 })
@@ -35,14 +38,12 @@ export class MessageComponent implements OnInit, AfterViewInit, OnChanges {
 
   @Input() conversation!: Conversation;
 
+  room!: Room;
   lastConversationId!: number;
-
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['conversation']) {
-      if (this.lastConversationId) {
-        this.messageWebSocketsService.leaveRoom(this.lastConversationId.toString());
-        this.messageWebSocketsService.joinRoom(this.conversation.id.toString());
-      }
+
+      this.getRoomHash(this.conversation.id);
       this.getMessagesFromConversation(this.conversation.id);
       this.lastConversationId = this.conversation.id;
     }
@@ -57,10 +58,18 @@ export class MessageComponent implements OnInit, AfterViewInit, OnChanges {
       );
     this.getMessagesFromConversation(this.conversation.id);
     this.lastConversationId = this.conversation.id;
-    this.messageWebSocketsService.joinRoom(this.conversation.id.toString());
     this.messageWebSocketsService.onEvent('roomNotification', (data: any) => {
       console.log(data);
     });
+  }
+
+  getRoomHash(id: number) {
+    this.messageWebSocketsService.getRoomHash(id)
+      .subscribe({
+        next: (room) => {
+          this.room = room;
+        }
+      });
   }
 
   getMessagesFromConversation(conversationId: number) {
@@ -118,8 +127,9 @@ export class MessageComponent implements OnInit, AfterViewInit, OnChanges {
       isRead: false
     };
     this.messages.push(newMessage);
-    this.messageService.sendMessage$(newMessage)
-      .subscribe();
+    this.messageWebSocketsService.sendMessageToRoom(this.room, newMessage);
+    // this.messageService.sendMessage$(newMessage)
+    //   .subscribe();
 
     this.newText = '';
 

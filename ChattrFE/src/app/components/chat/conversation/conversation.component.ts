@@ -10,6 +10,7 @@ import { UserService } from '../../../shared/services/user.service';
 import { MessageService } from '../../message/services/message.service';
 import { User } from '../../../shared/models/user.interface';
 import { Message } from '../../../shared/models/message.interface';
+import { MessageWebSocketsService } from '../../message/services/message-websocket.service';
 
 @Component({
   selector: 'app-conversation',
@@ -18,6 +19,7 @@ import { Message } from '../../../shared/models/message.interface';
     DatePipe,
     TruncatePipe
   ],
+  providers: [MessageWebSocketsService],
   templateUrl: './conversation.component.html',
   styleUrl: './conversation.component.css'
 })
@@ -30,7 +32,8 @@ export class ConversationComponent implements OnInit {
     private authService: AuthService,
     private chatService: ChatService,
     private userService: UserService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private messageWebSocketsService: MessageWebSocketsService
   ) { }
 
   ngOnInit(): void {
@@ -88,6 +91,15 @@ export class ConversationComponent implements OnInit {
       });
   }
 
+  joinConversationRoom(conversation: Conversation) {
+    this.messageWebSocketsService.getRoomHash(conversation.id)
+      .subscribe({
+        next: (roomHash) => {
+          this.messageWebSocketsService.joinRoom(roomHash);
+        }
+      });
+  }
+
   async aggregateConversations() {
     const conversations: Conversation[] = [];
 
@@ -141,6 +153,7 @@ export class ConversationComponent implements OnInit {
             }
           }
           conversations.push(conversation);
+          this.joinConversationRoom(conversation);
         })
     );
     return conversations;
