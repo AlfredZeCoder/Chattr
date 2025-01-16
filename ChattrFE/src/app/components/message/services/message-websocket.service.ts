@@ -1,5 +1,8 @@
 import { Injectable } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
+import { SERVER_URL, WS_URL } from '../../../../../env';
+import { MessageService } from './message.service';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable(
   { providedIn: 'root' }
@@ -7,10 +10,18 @@ import { io, Socket } from 'socket.io-client';
 export class MessageWebSocketsService {
   private socket!: Socket;
 
-  constructor() {
-    this.socket = io('http://localhost:3001/messages-gateway', { transports: ['websocket'] });
+  constructor(
+    private httpClient: HttpClient
+  ) {
+    this.socket = io(WS_URL, { transports: ['websocket'] });
   }
 
+
+  getRoomHash(conversationId: number) {
+    return this.httpClient.get<{ roomHash: string; }>(
+      `${SERVER_URL}/message/get-room-hash/${conversationId}`
+    );
+  }
 
   // MAKE ALL THESE OBSERVABLES
   joinRoom(room: string) {

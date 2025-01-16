@@ -79,11 +79,4 @@ export class AuthController implements OnModuleInit {
         };
 
     }
-
-    @Get('get-room-hash/:id')
-    async getRoomHash(@Param('id', ParseIntPipe) id: number) {
-        return {
-            roomHash: this.hashingService.generateRoomHash(id)
-        };
-    }
 }
