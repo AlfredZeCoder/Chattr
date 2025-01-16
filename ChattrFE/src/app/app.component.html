@@ -31,7 +31,7 @@
       <mat-menu class="menu" #menu="matMenu">
         <app-pending-request></app-pending-request>
       </mat-menu>
-      <p (click)="logout()">Logout
+      <p (click)="logout()">{{userName$ | async}}
       </p>
       }
     </div>

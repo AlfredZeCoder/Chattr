@@ -2,7 +2,7 @@ import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import { RouterOutlet, Router } from '@angular/router';
 import { AuthService } from './shared/auth/services/auth.service';
 import { CookieService } from 'ngx-cookie-service';
-import { switchMap, tap } from 'rxjs';
+import { BehaviorSubject, switchMap, tap } from 'rxjs';
 import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { iconSVG } from './shared/utils/iconSVG';
@@ -41,8 +41,10 @@ export class AppComponent implements OnInit {
   @ViewChild(MatMenuTrigger) menu!: MatMenuTrigger;
 
   hasOpenedMail = false;
+  userName$ = new BehaviorSubject<string>('');
 
   ngOnInit() {
+    this.userName$.next(this.authService.user$.getValue().firstName);
     const token = this.cookieService.get('access_token');
     if (!token) {
       this.authService.isLoggedIn$.next(false);
@@ -60,6 +62,7 @@ export class AppComponent implements OnInit {
         .subscribe({
           next: (user) => {
             this.authService.user$.next(user);
+            this.userName$.next(user.firstName);
           },
           error: () => {
             this.authService.isLoggedIn$.next(false);
