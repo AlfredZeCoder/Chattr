@@ -38,13 +38,11 @@ export class MessageComponent implements OnInit, AfterViewInit, OnChanges {
   @Input() conversation!: Conversation;
 
   room!: Room;
-  lastConversationId!: number;
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['conversation']) {
 
       this.getRoomHash(this.conversation.id);
       this.getMessagesFromConversation(this.conversation.id);
-      this.lastConversationId = this.conversation.id;
     }
   }
 
@@ -56,11 +54,8 @@ export class MessageComponent implements OnInit, AfterViewInit, OnChanges {
         }
       );
     this.receiveMessage();
-
     this.getMessagesFromConversation(this.conversation.id);
-    this.lastConversationId = this.conversation.id;
-    // this.messageWebSocketsService.onEvent('receiveMessageFromMessageRoom')
-    //   .subscribe(console.log);
+
   }
 
   getRoomHash(id: number) {
@@ -128,20 +123,16 @@ export class MessageComponent implements OnInit, AfterViewInit, OnChanges {
     };
     this.messages.push(newMessage);
     this.messageWebSocketsService.sendMessageToRoom(this.room, newMessage);
-    // this.messageService.sendMessage$(newMessage)
-    //   .subscribe();
-
     this.newText = '';
 
   }
 
   receiveMessage() {
-    this.messageWebSocketsService.onEvent<Message>('receiveMessageFromMessageRoom')
+    this.messageWebSocketsService.onEvent<{ room: Room, message: Message; }>('receiveMessageFromMessageRoom')
       .subscribe({
-        next: (message) => {
-          console.log("yes");
-          if (message.senderId !== this.authService.user$.getValue().id) {
-            this.messages.push(message);
+        next: (data) => {
+          if (data.message.senderId !== this.authService.user$.getValue().id && data.room.roomHash === this.room.roomHash) {
+            this.messages.push(data.message);
             this.scrollToBottom("receiveMessage");
           }
         }
