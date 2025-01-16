@@ -1,4 +1,4 @@
-import { BadRequestException, Param, UseGuards } from '@nestjs/common';
+import { BadRequestException, HttpCode, HttpStatus, Param, UseGuards } from '@nestjs/common';
 import { MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import { Message } from 'src/models/message.interface';
@@ -28,7 +28,7 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect 
   handleJoinMessageRoom(client: Socket, room: Room): void {
     client.join(room.roomHash);
     console.log(`Client ${client.id} joined room: ${room.roomHash}`);
-    this.server.to(room.roomHash).emit('roomNotification', `User ${client.id} joined the room ${room.roomHash}.`);
+    this.server.to(client.id).emit('joinMessageRoomNotification', HttpStatus.OK);
   }
 
   @SubscribeMessage('leaveMessageRoom')

@@ -5,6 +5,7 @@ import { MessageService } from './message.service';
 import { HttpClient } from '@angular/common/http';
 import { Room } from '../models/room.interface';
 import { Message } from '../../../shared/models/message.interface';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class MessageWebSocketsService {
@@ -35,7 +36,11 @@ export class MessageWebSocketsService {
     this.socket.emit('sendMessageToMessageRoom', { room, message });
   }
 
-  onEvent(event: string, callback: (data: any) => void) {
-    this.socket.on(event, callback);
+  onEvent<T>(event: string) {
+    return new Observable<T>((observer) => {
+      this.socket.on(event, (data: T) => {
+        observer.next(data);
+      });
+    });
   }
 }

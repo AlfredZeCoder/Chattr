@@ -58,9 +58,8 @@ export class MessageComponent implements OnInit, AfterViewInit, OnChanges {
       );
     this.getMessagesFromConversation(this.conversation.id);
     this.lastConversationId = this.conversation.id;
-    this.messageWebSocketsService.onEvent('roomNotification', (data: any) => {
-      console.log(data);
-    });
+    this.messageWebSocketsService.onEvent('roomNotification')
+      .subscribe(console.log);
   }
 
   getRoomHash(id: number) {
