@@ -31,8 +31,9 @@ export class MessageController implements OnModuleInit {
     }
 
     @Post('/add')
-    @UseGuards(IsSelfUserGuard)
+    // @UseGuards(IsSelfUserGuard)
     async addMessage(@Body() message: AddMessageDto) {
+
         return await this.messageService.addMessage(message);
     }
 

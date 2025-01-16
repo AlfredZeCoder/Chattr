@@ -113,6 +113,10 @@ export class ConversationComponent implements OnInit {
               conversation.lastMessageIsRead = data.message.isRead;
             }
           });
+          // this.conversations = this.conversations
+          //   .sort((a, b) => {
+          //     return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
+          //   });
         }
       });
   }

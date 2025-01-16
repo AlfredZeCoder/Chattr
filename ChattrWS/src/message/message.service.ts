@@ -1,7 +1,18 @@
+import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
-import * as crypto from 'crypto';
-
+import { Message } from 'src/models/message.interface';
 
 @Injectable()
 export class MessageService {
+
+    constructor(
+        private httpService: HttpService
+    ) { }
+
+    sendMessageToServer(message: Message) {
+        return this.httpService.post(
+            `${process.env.SERVER_URL}/message/add`,
+            message
+        );
+    }
 }

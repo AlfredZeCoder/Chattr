@@ -4,6 +4,7 @@ import { Socket, Server } from 'socket.io';
 import { Message } from 'src/models/message.interface';
 import { RoomGuard } from 'src/guards/room.guard';
 import { Room } from 'src/models/room.interface';
+import { MessageService } from './message.service';
 
 @WebSocketGateway({
   namespace: 'messages-gateway',
@@ -11,6 +12,7 @@ import { Room } from 'src/models/room.interface';
 export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   constructor(
+    private messageService: MessageService
   ) { }
 
   @WebSocketServer()
@@ -43,9 +45,13 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect 
   @SubscribeMessage('sendMessageToMessageRoom')
   async handleMessageToMessageRoom(client: Socket, data: { room: Room, message: Message; }) {
 
-    this.server.to(data.room.roomHash).emit('receiveMessageFromMessageRoom', {
-      room: data.room,
-      message: data.message
+    this.messageService.sendMessageToServer(data.message).subscribe({
+      next: (_) => {
+        this.server.to(data.room.roomHash).emit('receiveMessageFromMessageRoom', {
+          room: data.room,
+          message: data.message
+        });
+      }
     });
   }
 
