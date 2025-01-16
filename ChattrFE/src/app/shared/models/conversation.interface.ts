@@ -4,4 +4,5 @@ export interface Conversation {
     lastMessage: string;
     timestamp: Date;
     lastMessageIsRead: boolean;
+    roomHash?: string;
 }

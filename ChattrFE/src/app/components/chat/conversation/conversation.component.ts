@@ -11,6 +11,7 @@ import { MessageService } from '../../message/services/message.service';
 import { User } from '../../../shared/models/user.interface';
 import { Message } from '../../../shared/models/message.interface';
 import { MessageWebSocketsService } from '../../message/services/message-websocket.service';
+import { Room } from '../../message/models/room.interface';
 
 @Component({
   selector: 'app-conversation',
@@ -46,6 +47,7 @@ export class ConversationComponent implements OnInit {
           console.error(error);
         }
       });
+    this.updateLastMessage();
   }
 
   hasClickedConversation: boolean = false;
@@ -94,7 +96,23 @@ export class ConversationComponent implements OnInit {
     this.messageWebSocketsService.getRoomHash(conversation.id)
       .subscribe({
         next: (roomHash) => {
+          conversation.roomHash = roomHash.roomHash;
           this.messageWebSocketsService.joinRoom(roomHash);
+        }
+      });
+  }
+
+  updateLastMessage() {
+    this.messageWebSocketsService.onEvent<{ room: Room, message: Message; }>('receiveMessageFromMessageRoom')
+      .subscribe({
+        next: (data) => {
+          this.conversations.forEach((conversation) => {
+            if (conversation.roomHash === data.room.roomHash) {
+              conversation.lastMessage = data.message.message;
+              conversation.timestamp = data.message.timestamp;
+              conversation.lastMessageIsRead = data.message.isRead;
+            }
+          });
         }
       });
   }
