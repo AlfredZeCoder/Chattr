@@ -1,13 +1,16 @@
 import { Injectable } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
 import { SERVER_URL, WS_URL } from '../../../../../env';
-import { MessageService } from './message.service';
 import { HttpClient } from '@angular/common/http';
 import { Room } from '../models/room.interface';
 import { Message } from '../../../shared/models/message.interface';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
-@Injectable()
+@Injectable(
+  {
+    providedIn: 'root'
+  }
+)
 export class MessageWebSocketsService {
   private socket!: Socket;
 

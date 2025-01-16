@@ -19,7 +19,6 @@ import { MessageWebSocketsService } from '../../message/services/message-websock
     DatePipe,
     TruncatePipe
   ],
-  providers: [MessageWebSocketsService],
   templateUrl: './conversation.component.html',
   styleUrl: './conversation.component.css'
 })

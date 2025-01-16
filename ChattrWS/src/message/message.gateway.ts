@@ -42,18 +42,8 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect 
   // @UseGuards(RoomGuard)
   @SubscribeMessage('sendMessageToMessageRoom')
   async handleMessageToMessageRoom(client: Socket, data: { room: Room, message: Message; }) {
-    console.log("Room: " + data.room.roomHash);
-    console.log("Message: " + data.message.message);
 
-    // const roomName = this.generateRoomName(message.room);
-    // const sockets = await this.server.in(roomName).fetchSockets();
-    // console.log(sockets);
-    // if (!sockets.some(socket => socket.id === client.id)) {
-    //   return;
-    // }
-    // console.log(args[0][1]);
-    // console.log("Message: " + args[0][1]);
-    // this.server.to(roomName).emit('message', args[0][1]);
+    this.server.to(data.room.roomHash).emit('receiveMessageFromMessageRoom', data.message);
   }
 
 }

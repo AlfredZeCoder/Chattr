@@ -18,7 +18,6 @@ import { Room } from './models/room.interface';
     FormsModule,
     MatIconModule
   ],
-  providers: [MessageWebSocketsService],
   templateUrl: './message.component.html',
   styleUrl: './message.component.css',
 })
@@ -56,10 +55,12 @@ export class MessageComponent implements OnInit, AfterViewInit, OnChanges {
           this.userId = user.id;
         }
       );
+    this.receiveMessage();
+
     this.getMessagesFromConversation(this.conversation.id);
     this.lastConversationId = this.conversation.id;
-    this.messageWebSocketsService.onEvent('roomNotification')
-      .subscribe(console.log);
+    // this.messageWebSocketsService.onEvent('receiveMessageFromMessageRoom')
+    //   .subscribe(console.log);
   }
 
   getRoomHash(id: number) {
@@ -118,7 +119,7 @@ export class MessageComponent implements OnInit, AfterViewInit, OnChanges {
   sendMessage(message: string) {
     this.scrollToBottom("sendMessage");
     const newMessage: Message = {
-      id: 0,
+      id: this.authService.user$.getValue().id,
       conversationId: this.conversation!.id,
       message: message,
       senderId: this.userId,
@@ -132,6 +133,19 @@ export class MessageComponent implements OnInit, AfterViewInit, OnChanges {
 
     this.newText = '';
 
+  }
+
+  receiveMessage() {
+    this.messageWebSocketsService.onEvent<Message>('receiveMessageFromMessageRoom')
+      .subscribe({
+        next: (message) => {
+          console.log("yes");
+          if (message.senderId !== this.authService.user$.getValue().id) {
+            this.messages.push(message);
+            this.scrollToBottom("receiveMessage");
+          }
+        }
+      });
   }
 
 }
