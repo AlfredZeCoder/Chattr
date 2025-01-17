@@ -1,5 +1,5 @@
 import { NgStyle } from '@angular/common';
-import { AfterContentChecked, AfterRenderOptions, AfterRenderRef, AfterViewChecked, AfterViewInit, Component, ElementRef, inject, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Conversation } from '../../shared/models/conversation.interface';
 import { Message } from '../../shared/models/message.interface';
@@ -9,7 +9,6 @@ import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { iconSVG } from '../../shared/utils/iconSVG';
 import { MessageWebSocketsService } from './services/message-websocket.service';
-import { BehaviorSubject, switchMap, take } from 'rxjs';
 import { Room } from './models/room.interface';
 @Component({
   selector: 'app-message',
@@ -21,7 +20,7 @@ import { Room } from './models/room.interface';
   templateUrl: './message.component.html',
   styleUrl: './message.component.css',
 })
-export class MessageComponent implements OnInit, OnChanges, AfterViewChecked {
+export class MessageComponent implements OnInit, OnChanges {
 
   constructor(
     private messageService: MessageService,
@@ -34,14 +33,11 @@ export class MessageComponent implements OnInit, OnChanges, AfterViewChecked {
     iconRegistry.addSvgIconLiteral('arrow-up', sanitizer.bypassSecurityTrustHtml(iconSVG.arrowUp));
   }
 
-
-
   @Input() conversation!: Conversation;
 
   room!: Room;
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['conversation']) {
-
       this.getRoomHash(this.conversation.id);
       this.getMessagesFromConversation(this.conversation.id);
     }
@@ -57,10 +53,6 @@ export class MessageComponent implements OnInit, OnChanges, AfterViewChecked {
     this.receiveMessage();
   }
 
-  ngAfterViewChecked(): void {
-    this.scrollToBottom("ngAfterViewChecked");
-  }
-
   getRoomHash(id: number) {
     this.messageWebSocketsService.getRoomHash(id)
       .subscribe({
@@ -72,25 +64,24 @@ export class MessageComponent implements OnInit, OnChanges, AfterViewChecked {
 
   getMessagesFromConversation(conversationId: number) {
     this.messageService.getMessagesFromConversation$(conversationId)
-      .subscribe(
-        (messages) => {
+      .subscribe({
+        next: (messages) => {
           this.messages = messages;
           this.orderMessages();
 
+          Promise.resolve().then(() => {
+            this.scrollToBottom("afterRender");
+          });
 
           this.messages.forEach((message) => {
             if (message.senderId !== this.authService.user$.getValue().id && !message.isRead) {
               this.changeReadStatus(message);
             }
           });
-          // this.scrollToBottom("ngAfterViewInit");
         }
-      );
+      });
 
   }
-
-  // ngAfterViewInit(): void {
-  // }
 
   @ViewChild('chatContainer')
   chatContainer?: ElementRef;
@@ -103,7 +94,6 @@ export class MessageComponent implements OnInit, OnChanges, AfterViewChecked {
 
   newText: string = '';
   userId!: number;
-
   messages: Message[] = [];
 
   orderMessages() {
@@ -117,13 +107,12 @@ export class MessageComponent implements OnInit, OnChanges, AfterViewChecked {
       const container = this.chatContainer!.nativeElement;
       container.scroll({
         top: container.scrollHeight,
-        behavior: from == "ngAfterViewChecked" ? 'auto' : 'smooth'
+        behavior: from == "afterRender" ? 'auto' : 'smooth'
       });
     }, 0);
   }
 
   sendMessage(message: string) {
-    this.scrollToBottom("sendMessage");
     const newMessage: Message = {
       id: this.authService.user$.getValue().id,
       conversationId: this.conversation!.id,
@@ -135,7 +124,7 @@ export class MessageComponent implements OnInit, OnChanges, AfterViewChecked {
     this.messages.push(newMessage);
     this.messageWebSocketsService.sendMessageToRoom(this.room, newMessage);
     this.newText = '';
-
+    this.scrollToBottom('');
   }
 
   receiveMessage() {
@@ -144,8 +133,7 @@ export class MessageComponent implements OnInit, OnChanges, AfterViewChecked {
         next: (data) => {
           if (data.message.senderId !== this.authService.user$.getValue().id && data.room.roomHash === this.room.roomHash) {
             this.messages.push(data.message);
-            console.log(this.messages);
-            this.scrollToBottom("receiveMessage");
+            this.scrollToBottom('');
           }
         }
       });

@@ -50,6 +50,9 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect 
           room: data.room,
           message: data.message
         });
+      },
+      error: (error) => {
+        return;
       }
     });
   }
