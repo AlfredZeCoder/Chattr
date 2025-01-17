@@ -40,8 +40,8 @@ export class MessageComponent implements OnInit, AfterViewInit, OnChanges {
   room!: Room;
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['conversation']) {
-
       this.getRoomHash(this.conversation.id);
+      this.getMessagesFromConversation(this.conversation.id);
       this.getMessagesFromConversation(this.conversation.id);
     }
   }
@@ -54,8 +54,6 @@ export class MessageComponent implements OnInit, AfterViewInit, OnChanges {
         }
       );
     this.receiveMessage();
-    this.getMessagesFromConversation(this.conversation.id);
-
   }
 
   getRoomHash(id: number) {
@@ -72,6 +70,8 @@ export class MessageComponent implements OnInit, AfterViewInit, OnChanges {
       .subscribe(
         (messages) => {
           this.messages = messages;
+          this.orderMessages();
+
           this.messages.forEach((message) => {
             if (message.senderId !== this.authService.user$.getValue().id && !message.isRead) {
               this.changeReadStatus(message);
@@ -100,6 +100,11 @@ export class MessageComponent implements OnInit, AfterViewInit, OnChanges {
 
   messages: Message[] = [];
 
+  orderMessages() {
+    this.messages.sort((a, b) => {
+      return new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime();
+    });
+  }
 
   scrollToBottom(from: string): void {
     setTimeout(() => {
@@ -133,6 +138,7 @@ export class MessageComponent implements OnInit, AfterViewInit, OnChanges {
         next: (data) => {
           if (data.message.senderId !== this.authService.user$.getValue().id && data.room.roomHash === this.room.roomHash) {
             this.messages.push(data.message);
+            console.log(this.messages);
             this.scrollToBottom("receiveMessage");
           }
         }
