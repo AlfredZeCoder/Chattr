@@ -1,5 +1,5 @@
 import { NgStyle } from '@angular/common';
-import { AfterViewInit, Component, ElementRef, inject, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { AfterContentChecked, AfterRenderOptions, AfterRenderRef, AfterViewChecked, AfterViewInit, Component, ElementRef, inject, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Conversation } from '../../shared/models/conversation.interface';
 import { Message } from '../../shared/models/message.interface';
@@ -21,7 +21,7 @@ import { Room } from './models/room.interface';
   templateUrl: './message.component.html',
   styleUrl: './message.component.css',
 })
-export class MessageComponent implements OnInit, AfterViewInit, OnChanges {
+export class MessageComponent implements OnInit, OnChanges, AfterViewChecked {
 
   constructor(
     private messageService: MessageService,
@@ -35,11 +35,13 @@ export class MessageComponent implements OnInit, AfterViewInit, OnChanges {
   }
 
 
+
   @Input() conversation!: Conversation;
 
   room!: Room;
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['conversation']) {
+
       this.getRoomHash(this.conversation.id);
       this.getMessagesFromConversation(this.conversation.id);
     }
@@ -53,6 +55,10 @@ export class MessageComponent implements OnInit, AfterViewInit, OnChanges {
         }
       );
     this.receiveMessage();
+  }
+
+  ngAfterViewChecked(): void {
+    this.scrollToBottom("ngAfterViewChecked");
   }
 
   getRoomHash(id: number) {
@@ -71,19 +77,20 @@ export class MessageComponent implements OnInit, AfterViewInit, OnChanges {
           this.messages = messages;
           this.orderMessages();
 
+
           this.messages.forEach((message) => {
             if (message.senderId !== this.authService.user$.getValue().id && !message.isRead) {
               this.changeReadStatus(message);
             }
           });
+          // this.scrollToBottom("ngAfterViewInit");
         }
       );
 
   }
 
-  ngAfterViewInit(): void {
-    this.scrollToBottom("ngAfterViewInit");
-  }
+  // ngAfterViewInit(): void {
+  // }
 
   @ViewChild('chatContainer')
   chatContainer?: ElementRef;
@@ -110,7 +117,7 @@ export class MessageComponent implements OnInit, AfterViewInit, OnChanges {
       const container = this.chatContainer!.nativeElement;
       container.scroll({
         top: container.scrollHeight,
-        behavior: from == "ngAfterViewInit" ? 'auto' : 'smooth'
+        behavior: from == "ngAfterViewChecked" ? 'auto' : 'smooth'
       });
     }, 0);
   }
