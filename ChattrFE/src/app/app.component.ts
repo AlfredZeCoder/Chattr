@@ -41,10 +41,8 @@ export class AppComponent implements OnInit {
   @ViewChild(MatMenuTrigger) menu!: MatMenuTrigger;
 
   hasOpenedMail = false;
-  userName$ = new BehaviorSubject<string>('');
 
   ngOnInit() {
-    this.userName$.next(this.authService.user$.getValue().firstName);
     const token = this.cookieService.get('access_token');
     if (!token) {
       this.authService.isLoggedIn$.next(false);
@@ -62,7 +60,6 @@ export class AppComponent implements OnInit {
         .subscribe({
           next: (user) => {
             this.authService.user$.next(user);
-            this.userName$.next(user.firstName);
           },
           error: () => {
             this.authService.isLoggedIn$.next(false);
