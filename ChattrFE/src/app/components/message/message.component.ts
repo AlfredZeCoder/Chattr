@@ -42,7 +42,6 @@ export class MessageComponent implements OnInit, AfterViewInit, OnChanges {
     if (changes['conversation']) {
       this.getRoomHash(this.conversation.id);
       this.getMessagesFromConversation(this.conversation.id);
-      this.getMessagesFromConversation(this.conversation.id);
     }
   }
 

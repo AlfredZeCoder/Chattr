@@ -29,7 +29,6 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect 
   @SubscribeMessage('joinMessageRoom')
   handleJoinMessageRoom(client: Socket, room: Room): void {
     client.join(room.roomHash);
-    console.log(`Client ${client.id} joined room: ${room.roomHash}`);
     this.server.to(client.id).emit('joinMessageRoomNotification', HttpStatus.OK);
   }
 
@@ -48,6 +47,19 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect 
     this.messageService.sendMessageToServer(data.message).subscribe({
       next: (_) => {
         this.server.to(data.room.roomHash).emit('receiveMessageFromMessageRoom', {
+          room: data.room,
+          message: data.message
+        });
+      }
+    });
+  }
+
+  @SubscribeMessage('changeMessageReadStatusToRoom')
+  async handleChangeMessageReadStatusToRoom(client: Socket, data: { room: Room, message: Message; }) {
+
+    this.messageService.changeMessageReadStatus(data.message).subscribe({
+      next: (_) => {
+        this.server.to(data.room.roomHash).emit('receiveMessageReadStatusChange', {
           room: data.room,
           message: data.message
         });

@@ -39,6 +39,10 @@ export class MessageWebSocketsService {
     this.socket.emit('sendMessageToMessageRoom', { room, message });
   }
 
+  changeMessageReadStatus(room: Room, message: Message) {
+    this.socket.emit('changeMessageReadStatusToRoom', { room, message });
+  }
+
   onEvent<T>(event: string) {
     return new Observable<T>((observer) => {
       this.socket.on(event, (data: T) => {
