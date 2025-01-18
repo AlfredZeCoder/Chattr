@@ -48,8 +48,8 @@ export class ConversationComponent implements OnInit {
         }
       });
     this.updateLastMessage();
-    this.conversation$.subscribe(console.log);
     this.conversation$.subscribe(c => this.conversation = c);
+    // this.conversation$.subscribe(console.log);
   }
   conversation?: Conversation;
   hasClickedConversation: boolean = false;
@@ -105,22 +105,22 @@ export class ConversationComponent implements OnInit {
   }
 
   updateLastMessage() {
-    let conv;
     this.messageWebSocketsService.onEvent<{ room: Room, message: Message; }>('receiveMessageFromMessageRoom')
-      .pipe(
-        tap((data) => {
-          this.conversations.forEach((conversation) => {
-            if (conversation.roomHash === data.room.roomHash) {
-              conversation.lastMessage = data.message.message;
-              conversation.timestamp = data.message.timestamp;
-              conversation.lastMessageIsRead = this.authService.user$.getValue().id === data.message.senderId;
-            }
-          });
-        }),
-      )
       .subscribe({
         next: (data) => {
-          console.log(data);
+          this.conversations.forEach((conv) => {
+            if (conv.roomHash === data.room.roomHash) {
+              conv.lastMessage = data.message.message;
+              conv.timestamp = data.message.timestamp;
+              if (!this.conversation) {
+                conv.lastMessageIsRead = false;
+              } else if (this.conversation.id !== conv.id) {
+                conv.lastMessageIsRead = false;
+              } else {
+                conv.lastMessageIsRead = true;
+              }
+            }
+          });
         }
       });
   }
