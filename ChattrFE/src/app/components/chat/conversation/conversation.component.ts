@@ -88,10 +88,14 @@ export class ConversationComponent implements OnInit {
   }
 
   async assignConversations() {
-    this.conversations = (await this.aggregateConversations())
-      .sort((a, b) => {
-        return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
-      });
+    this.conversations = (await this.aggregateConversations());
+    this.sortConversations();
+  }
+
+  sortConversations() {
+    this.conversations.sort((a, b) => {
+      return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
+    });
   }
 
   joinConversationRoom(conversation: Conversation) {
@@ -121,6 +125,7 @@ export class ConversationComponent implements OnInit {
               }
             }
           });
+          this.sortConversations();
         }
       });
   }
