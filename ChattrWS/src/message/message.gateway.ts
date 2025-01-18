@@ -56,19 +56,5 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect 
       }
     });
   }
-
-  @SubscribeMessage('changeMessageReadStatusToRoom')
-  async handleChangeMessageReadStatusToRoom(client: Socket, data: { room: Room, message: Message; }) {
-
-    this.messageService.changeMessageReadStatus(data.message).subscribe({
-      next: (_) => {
-        this.server.to(data.room.roomHash).emit('receiveMessageReadStatusChange', {
-          room: data.room,
-          message: data.message
-        });
-      }
-    });
-  }
-
 }
 

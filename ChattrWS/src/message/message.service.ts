@@ -15,11 +15,4 @@ export class MessageService {
             message
         );
     }
-
-    changeMessageReadStatus(message: Message) {
-        return this.httpService.put(
-            `${process.env.SERVER_URL}/message/update-read-status/${message.id}`,
-            message
-        );
-    }
 }
