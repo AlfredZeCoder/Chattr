@@ -10,7 +10,7 @@ export class MessageService {
     ) { }
 
     sendMessageToServer(message: Message) {
-        return this.httpService.post(
+        return this.httpService.post<Message>(
             `${process.env.SERVER_URL}/message/add`,
             message
         );

@@ -114,7 +114,7 @@ export class MessageComponent implements OnInit, OnChanges {
 
   sendMessage(message: string) {
     const newMessage: Message = {
-      id: this.authService.user$.getValue().id,
+      id: 0,
       conversationId: this.conversation!.id,
       message: message,
       senderId: this.userId,
@@ -131,8 +131,10 @@ export class MessageComponent implements OnInit, OnChanges {
     this.messageWebSocketsService.onEvent<{ room: Room, message: Message; }>('receiveMessageFromMessageRoom')
       .subscribe({
         next: (data) => {
+          console.log(data.message);
           if (data.message.senderId !== this.authService.user$.getValue().id && data.room.roomHash === this.room.roomHash) {
             this.messages.push(data.message);
+            this.changeReadStatus(data.message);
             this.scrollToBottom('');
           }
         }

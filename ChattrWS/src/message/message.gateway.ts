@@ -43,12 +43,12 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect 
   // @UseGuards(RoomGuard)
   @SubscribeMessage('sendMessageToMessageRoom')
   async handleMessageToMessageRoom(client: Socket, data: { room: Room, message: Message; }) {
-
     this.messageService.sendMessageToServer(data.message).subscribe({
-      next: (_) => {
+      next: (message) => {
+        console.log(message.data);
         this.server.to(data.room.roomHash).emit('receiveMessageFromMessageRoom', {
           room: data.room,
-          message: data.message
+          message: message.data
         });
       },
       error: (error) => {

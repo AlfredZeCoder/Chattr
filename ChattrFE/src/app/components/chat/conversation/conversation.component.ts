@@ -1,9 +1,9 @@
-import { Component, OnInit, output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, output } from '@angular/core';
 import { Conversation } from '../../../shared/models/conversation.interface';
 import { DatePipe, NgStyle } from '@angular/common';
 import { TruncatePipe } from '../../../shared/pipes/truncate.pipe';
 import { AuthService } from '../../../shared/auth/services/auth.service';
-import { filter, firstValueFrom, Observable, switchMap } from 'rxjs';
+import { BehaviorSubject, filter, firstValueFrom, Observable, of, switchMap, tap } from 'rxjs';
 import { ChatService } from '../services/chat.service';
 import { ConversationProperties } from '../../../shared/models/conversation-properties.interface';
 import { UserService } from '../../../shared/services/user.service';
@@ -26,7 +26,7 @@ import { Room } from '../../message/models/room.interface';
 export class ConversationComponent implements OnInit {
 
   // @Output() conversation = new EventEmitter<Conversation>();
-  conversation = output<Conversation>();
+  conversation$ = output<Conversation>();
 
   constructor(
     private authService: AuthService,
@@ -48,8 +48,10 @@ export class ConversationComponent implements OnInit {
         }
       });
     this.updateLastMessage();
+    this.conversation$.subscribe(console.log);
+    this.conversation$.subscribe(c => this.conversation = c);
   }
-
+  conversation?: Conversation;
   hasClickedConversation: boolean = false;
   clickedConversationId!: number;
   conversations: Conversation[] = [];
@@ -103,20 +105,22 @@ export class ConversationComponent implements OnInit {
   }
 
   updateLastMessage() {
+    let conv;
     this.messageWebSocketsService.onEvent<{ room: Room, message: Message; }>('receiveMessageFromMessageRoom')
-      .subscribe({
-        next: (data) => {
+      .pipe(
+        tap((data) => {
           this.conversations.forEach((conversation) => {
             if (conversation.roomHash === data.room.roomHash) {
               conversation.lastMessage = data.message.message;
               conversation.timestamp = data.message.timestamp;
-              conversation.lastMessageIsRead = data.message.isRead;
+              conversation.lastMessageIsRead = this.authService.user$.getValue().id === data.message.senderId;
             }
           });
-          // this.conversations = this.conversations
-          //   .sort((a, b) => {
-          //     return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
-          //   });
+        }),
+      )
+      .subscribe({
+        next: (data) => {
+          console.log(data);
         }
       });
   }
@@ -204,7 +208,7 @@ export class ConversationComponent implements OnInit {
 
 
   getConversation(conversation: Conversation) {
-    this.conversation.emit(conversation);
+    this.conversation$.emit(conversation);
 
     //Not affecting backend
     conversation.lastMessageIsRead = true;
