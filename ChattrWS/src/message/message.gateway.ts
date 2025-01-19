@@ -1,0 +1,60 @@
+import { BadRequestException, HttpCode, HttpStatus, Param, UseGuards } from '@nestjs/common';
+import { MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { Socket, Server } from 'socket.io';
+import { Message } from 'src/models/message.interface';
+import { RoomGuard } from 'src/guards/room.guard';
+import { Room } from 'src/models/room.interface';
+import { MessageService } from './message.service';
+
+@WebSocketGateway({
+  namespace: 'messages-gateway',
+})
+export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect {
+
+  constructor(
+    private messageService: MessageService
+  ) { }
+
+  @WebSocketServer()
+  server: Server;
+
+  handleConnection(client: Socket) {
+    // console.log(`Client connected: ${client.id}`);
+  }
+
+  handleDisconnect(client: Socket) {
+    // console.log(`Client disconnected: ${client.id}`);
+  }
+
+  @SubscribeMessage('joinMessageRoom')
+  handleJoinMessageRoom(client: Socket, room: Room): void {
+    client.join(room.roomHash);
+    this.server.to(client.id).emit('joinMessageRoomNotification', HttpStatus.OK);
+  }
+
+  @SubscribeMessage('leaveMessageRoom')
+  handleLeaveMessageRoom(client: Socket, room: string): void {
+
+    client.leave(room);
+    // console.log(`Client ${client.id} left room: ${room}`);
+    this.server.to(room).emit('roomNotification', `User ${client.id} left the room.`);
+  }
+
+  // @UseGuards(RoomGuard)
+  @SubscribeMessage('sendMessageToMessageRoom')
+  async handleMessageToMessageRoom(client: Socket, data: { room: Room, message: Message; }) {
+    this.messageService.sendMessageToServer(data.message).subscribe({
+      next: (message) => {
+        console.log(message.data);
+        this.server.to(data.room.roomHash).emit('receiveMessageFromMessageRoom', {
+          room: data.room,
+          message: message.data
+        });
+      },
+      error: (error) => {
+        return;
+      }
+    });
+  }
+}
+

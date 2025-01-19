@@ -13,12 +13,14 @@
                 @if (conversation.lastMessage === "No messages yet"){
 
                 }
-                @else if (!isYesterday(conversation.timestamp)) {
+                @else if (isToday(conversation.timestamp)) {
                 {{ conversation.timestamp | date: 'shortTime' }}
-                } @else if (isYesterday(conversation.timestamp)) {
+                }
+                @else if (isYesterday(conversation.timestamp)) {
                 Yesterday
-                } @else {
-                {{ conversation.timestamp | date: 'shortDate' }}
+                }
+                @else {
+                {{ conversation.timestamp | date: 'dd/MM/YYYY' }}
                 }
             </div>
         </div>

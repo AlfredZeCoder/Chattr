@@ -79,7 +79,7 @@ export class MessageService implements OnModuleInit {
         return await this.messageRepository.findOne(query);
     }
 
-    async addMessage(message: AddMessageDto): Promise<void> {
+    async addMessage(message: AddMessageDto) {
         if (!message) {
             throw new BadRequestException('Message is required');
         }
@@ -102,7 +102,8 @@ export class MessageService implements OnModuleInit {
 
         await this.userService.findOneById(message.senderId);
         await this.conversationService.getConversationById(message.conversationId);
-        await this.messageRepository.save(message);
+        const m = await this.messageRepository.save(message);
+        return m;
     }
 
     async deleteMessage(messageId: number): Promise<void> {

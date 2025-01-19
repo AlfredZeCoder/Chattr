@@ -1,15 +1,17 @@
-import { Component, OnInit, output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, output } from '@angular/core';
 import { Conversation } from '../../../shared/models/conversation.interface';
 import { DatePipe, NgStyle } from '@angular/common';
 import { TruncatePipe } from '../../../shared/pipes/truncate.pipe';
 import { AuthService } from '../../../shared/auth/services/auth.service';
-import { filter, firstValueFrom, Observable, switchMap } from 'rxjs';
-import { ChatService } from '../chat.service';
+import { BehaviorSubject, filter, firstValueFrom, Observable, of, switchMap, tap } from 'rxjs';
+import { ChatService } from '../services/chat.service';
 import { ConversationProperties } from '../../../shared/models/conversation-properties.interface';
 import { UserService } from '../../../shared/services/user.service';
-import { MessageService } from '../../../components/message/message.service';
+import { MessageService } from '../../message/services/message.service';
 import { User } from '../../../shared/models/user.interface';
 import { Message } from '../../../shared/models/message.interface';
+import { MessageWebSocketsService } from '../../message/services/message-websocket.service';
+import { Room } from '../../message/models/room.interface';
 
 @Component({
   selector: 'app-conversation',
@@ -24,13 +26,14 @@ import { Message } from '../../../shared/models/message.interface';
 export class ConversationComponent implements OnInit {
 
   // @Output() conversation = new EventEmitter<Conversation>();
-  conversation = output<Conversation>();
+  conversation$ = output<Conversation>();
 
   constructor(
     private authService: AuthService,
     private chatService: ChatService,
     private userService: UserService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private messageWebSocketsService: MessageWebSocketsService
   ) { }
 
   ngOnInit(): void {
@@ -44,8 +47,11 @@ export class ConversationComponent implements OnInit {
           console.error(error);
         }
       });
+    this.updateLastMessage();
+    this.conversation$.subscribe(c => this.conversation = c);
+    // this.conversation$.subscribe(console.log);
   }
-
+  conversation?: Conversation;
   hasClickedConversation: boolean = false;
   clickedConversationId!: number;
   conversations: Conversation[] = [];
@@ -61,6 +67,14 @@ export class ConversationComponent implements OnInit {
     return conversationTime >= yesterdayStart.getTime() && conversationTime <= yesterdayEnd.getTime();
   }
 
+  isToday(timestamp: Date) {
+    const todayStart = new Date(new Date().setHours(0, 0, 0, 0));
+    const todayEnd = new Date(new Date().setHours(23, 59, 59, 999));
+    const conversationTime = new Date(timestamp).getTime();
+
+    return conversationTime >= todayStart.getTime() && conversationTime <= todayEnd.getTime();
+  }
+
   getAllConversationProperties$() {
     return this.authService.user$
       .pipe(
@@ -74,9 +88,45 @@ export class ConversationComponent implements OnInit {
   }
 
   async assignConversations() {
-    this.conversations = (await this.aggregateConversations())
-      .sort((a, b) => {
-        return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
+    this.conversations = (await this.aggregateConversations());
+    this.sortConversations();
+  }
+
+  sortConversations() {
+    this.conversations.sort((a, b) => {
+      return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
+    });
+  }
+
+  joinConversationRoom(conversation: Conversation) {
+    this.messageWebSocketsService.getRoomHash(conversation.id)
+      .subscribe({
+        next: (roomHash) => {
+          conversation.roomHash = roomHash.roomHash;
+          this.messageWebSocketsService.joinRoom(roomHash);
+        }
+      });
+  }
+
+  updateLastMessage() {
+    this.messageWebSocketsService.onEvent<{ room: Room, message: Message; }>('receiveMessageFromMessageRoom')
+      .subscribe({
+        next: (data) => {
+          this.conversations.forEach((conv) => {
+            if (conv.roomHash === data.room.roomHash) {
+              conv.lastMessage = data.message.message;
+              conv.timestamp = data.message.timestamp;
+              if (!this.conversation) {
+                conv.lastMessageIsRead = false;
+              } else if (this.conversation.id !== conv.id) {
+                conv.lastMessageIsRead = false;
+              } else {
+                conv.lastMessageIsRead = true;
+              }
+            }
+          });
+          this.sortConversations();
+        }
       });
   }
 
@@ -133,6 +183,7 @@ export class ConversationComponent implements OnInit {
             }
           }
           conversations.push(conversation);
+          this.joinConversationRoom(conversation);
         })
     );
     return conversations;
@@ -162,7 +213,7 @@ export class ConversationComponent implements OnInit {
 
 
   getConversation(conversation: Conversation) {
-    this.conversation.emit(conversation);
+    this.conversation$.emit(conversation);
 
     //Not affecting backend
     conversation.lastMessageIsRead = true;
